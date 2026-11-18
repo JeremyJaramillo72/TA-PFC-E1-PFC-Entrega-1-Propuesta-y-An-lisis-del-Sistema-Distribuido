@@ -6,7 +6,7 @@ Proyecto Fin de Curso — Entrega 1 (`TA-PFC-E1`), asignatura **Aplicaciones Dis
 Plataforma distribuida basada en microservicios para gestionar la inserción laboral de los graduados de la UTEQ, integrando validación administrativa de vacantes publicadas por empresas colaboradoras, importación periódica de ofertas externas mediante *web scraping* y alertas personalizadas.
 
 ## Integrantes y roles
-| Integrante | Rol en el proyecto |
+| Integrante | Rol en el proyecto  |
 | :--- | :--- |
 | Luis Jeremy Jaramillo Acosta | Arquitecto |
 | Kenny Isaías España Vera | Líder de Desarrollo |
