@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package bolsa_uteq;
+
+service PerfilService {
+  rpc VerificarElegibilidad (ConsultaGraduadoRequest) returns (ElegibilidadResponse);
+}
+
+message ConsultaGraduadoRequest {
+  string cedula_o_id = 1;
+  string codigo_oferta = 2;
+}
+
+message ElegibilidadResponse {
+  bool elegible = 1;
+  string nombre_completo = 2;
+  string carrera = 3;
+  string motivo = 4;
+}
