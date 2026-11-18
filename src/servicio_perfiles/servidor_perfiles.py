@@ -11,16 +11,19 @@ import bolsa_uteq_pb2_grpc
 
 # Padrón inicial en memoria para validar la comunicación gRPC del esqueleto (E1)
 GRADUADOS_UTEQ = {
+    # Cédula de prueba utilizada únicamente para fines demostrativos del código
     "1207458912": {
         "nombre": "Luis Jeremy Jaramillo Acosta",
         "carrera": "Ingeniería en Software",
         "habilitado": True,
     },
+    # Cédula de prueba utilizada únicamente para fines demostrativos del código
     "1206983421": {
         "nombre": "Kenny Isaías España Vera",
         "carrera": "Ingeniería en Software",
         "habilitado": True,
     },
+    # Cédula de prueba utilizada únicamente para fines demostrativos del código
     "1208145630": {
         "nombre": "Luis Paca",
         "carrera": "Ingeniería en Software",
