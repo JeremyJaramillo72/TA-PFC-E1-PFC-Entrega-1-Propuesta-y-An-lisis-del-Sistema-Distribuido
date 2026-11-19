@@ -8,14 +8,14 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 | Luis Jeremy Jaramillo Acosta | Arquitecto |
 | Kenny Isaías España Vera | Líder de Desarrollo |
 | Heiner Ariel Zambrano Ronquillo | Responsable de Calidad |
-| Luis Paca | Responsable de Documentación |
+| Luis Alberto Paca Pilataza | Responsable de Documentación |
 
 ---
 
 ## Sesión 1 — 17/11/2026
 
 - **Hora:** 22:15 – 00:05 (aprox.)
-- **Modalidad:** _(completar: presencial / virtual — plataforma)_
+- **Modalidad:** Virtual — Discord / WhatsApp
 - **Presentes:** Luis Jeremy Jaramillo Acosta, Kenny Isaías España Vera, Heiner Ariel Zambrano Ronquillo, Luis Paca
 
 ### Temas tratados
@@ -37,14 +37,48 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ### Problemas resueltos
 - `referencias.bib` se había creado en la raíz del repositorio; se movió a `docs/` para cumplir la estructura pedida (commit `6bb3142`).
-- _(completar: otros problemas que surgieron en la sesión, p. ej. al generar el código desde el `.proto` o al levantar el servidor)_
-
+- Los primeros commits se subieron antes de abrir los issues en GitHub; se vincularon manualmente los hashes en cada issue para conservar la trazabilidad.
+  
 ### Pendientes para la próxima sesión
 - [ ] Implementar `servicio_postulaciones` como cliente gRPC del servicio de perfiles.
 - [ ] Coordinar la entrevista con un responsable real del dominio (UTEQ) y preparar el acta.
 - [ ] Elaborar los diagramas C4 (nivel 1 y 2) en draw.io.
 - [ ] Completar el README con las instrucciones de ejecución y de compilación.
 - [ ] Crear los issues restantes de E1 y E2 en el tablero.
+
+---
+
+## Sesión 2 — 18/11/2026
+
+- **Hora:** 20:00 – 22:30 (aprox.)
+- **Modalidad:** Virtual — Discord / WhatsApp
+- **Presentes:** Luis Jeremy Jaramillo Acosta, Kenny Isaías España Vera, Heiner Ariel Zambrano Ronquillo, Luis Alberto Paca Pilataza
+
+### Temas tratados
+1. Configuración de permisos de escritura en el tablero público de GitHub Projects para todos los colaboradores.
+2. Planificación de tareas restantes de E1 y creación de los primeros issues de E2 con etiquetas y responsables (#6, #7, #8 y #10).
+3. Inicio del diagrama de contexto C4 Nivel 1 en `draw.io` (issue #8).
+4. Creación de la plantilla base compilable del informe técnico en `docs/main.tex` vinculada a `docs/referencias.bib` (issue #10).
+5. Revisión del avance del cliente gRPC (`servicio_postulaciones`) y coordinación del levantamiento real de información.
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D6 | Habilitar permisos de escritura (*Write*) en el tablero público de GitHub Projects para todo el equipo y clasificar los issues con etiquetas (`E1`, `[E2]`). | Jeremy (Arquitecto) | Tablero `TA-PFC-E1 - Bolsa de Empleos UTEQ` — issues #6, #7, #8, #10 |
+| D7 | Estandarizar el flujo de trabajo creando siempre el issue antes del `commit` para incluir `(Refs #N)` o `(Closes #N)` en el mensaje y automatizar la trazabilidad. | Todo el equipo | Issue #10 |
+| D8 | Estructurar el informe técnico principal en `docs/main.tex` con `biblatex` (estilo IEEE) enlazado a `docs/referencias.bib`, incluyendo portada oficial, roles y cronograma E1–E4. | Luis Paca | `docs/main.tex` — issue #10 |
+| D9 | Planificar en el tablero las tareas base de Docker y pruebas de integración para la Entrega 2 (E2) en estado `Todo`. | Jeremy y Heiner | Issues #6 y #7 |
+
+### Problemas resueltos
+- Los colaboradores no visualizaban el tablero `TA-PFC-E1 - Bolsa de Empleos UTEQ` en el selector *Projects* al abrir un issue; se habilitaron los permisos en el tablero y se enlazó el proyecto al repositorio, logrando vincular correctamente el issue #10.
+- Se verificó el remoto configurado en Git (`git remote -v`) para evitar confusión entre el repositorio de `PE-U1` (`Heiner-ZZZ`) y el repositorio del proyecto `TA-PFC-E1` (`JeremyJaramillo72`).
+
+### Pendientes para la próxima sesión
+- [ ] Completar y exportar el diagrama C4 Nivel 1 (issue #8) y elaborar el diagrama C4 Nivel 2 (Contenedores).
+- [ ] Implementar `servicio_postulaciones` (cliente gRPC) y obtener las 3 capturas de ejecución con usuario, equipo y fecha/hora visibles.
+- [ ] Recolectar y subir la evidencia de levantamiento real (acta firmada de entrevista o resultados de encuesta a >= 15 personas) en `evidencias/`.
+- [ ] Realizar la sesión de bosquejo arquitectónico en equipo y subir las 2 fotografías en `evidencias/`.
+- [ ] Crear los issues pendientes de E2 en el tablero para Kenny y Luis Paca.
 
 ---
 
