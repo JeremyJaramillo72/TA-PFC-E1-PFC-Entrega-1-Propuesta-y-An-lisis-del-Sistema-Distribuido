@@ -1,0 +1,92 @@
+<mxfile host="app.diagrams.net" modified="2026-11-19T09:20:00.000Z" agent="draw.io" version="24.7.17">
+  <diagram id="c4-contenedores-bolsa-uteq" name="C4 Nivel 2 - Contenedores">
+    <mxGraphModel dx="1420" dy="860" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Titulo -->
+        <mxCell id="title" value="&lt;b&gt;Diagrama de Contenedores (C4 Nivel 2) — Bolsa de Empleos para Graduados UTEQ&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="380" y="15" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ACTORES -->
+        <mxCell id="p_graduado" value="&lt;b&gt;Graduado UTEQ&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Persona]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Gestiona perfil, busca vacantes&lt;br&gt;y registra postulaciones." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#052E56;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="220" y="60" width="250" height="95" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p_empresa" value="&lt;b&gt;Empresa Colaboradora&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Persona]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Publica ofertas laborales y&lt;br&gt;gestiona postulantes." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#052E56;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="655" y="60" width="250" height="95" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p_admin" value="&lt;b&gt;Administrador UTEQ&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Persona]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Valida ofertas, gestiona usuarios&lt;br&gt;y consulta auditoría." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#08427B;strokeColor=#052E56;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="60" width="250" height="95" as="geometry" />
+        </mxCell>
+
+        <!-- FRONTERA DEL SISTEMA -->
+        <mxCell id="boundary_sys" value="&lt;b&gt;Bolsa de Empleos para Graduados UTEQ&lt;/b&gt; &lt;font style=&quot;font-size:11px;&quot;&gt;[Límite del Sistema Distribuido]&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;strokeWidth=2;strokeColor=#0B4884;fillColor=none;verticalAlign=top;align=left;spacingLeft=14;spacingTop=8;fontSize=13;fontColor=#0B4884;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="1480" height="560" as="geometry" />
+        </mxCell>
+
+        <!-- CONTENEDORES DE ENTRADA -->
+        <mxCell id="c_webapp" value="&lt;b&gt;Aplicación Web (Frontend)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: SPA Web]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Interfaz única responsiva para graduados, empresas y administradores." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="265" width="360" height="85" as="geometry" />
+        </mxCell>
+
+        <mxCell id="c_gateway" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: REST / Enrutamiento y RBAC]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Punto único de entrada, control de acceso por roles (RBAC) y enrutamiento." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="600" y="425" width="360" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- MICROSERVICIOS -->
+        <mxCell id="ms_perfiles" value="&lt;b&gt;Servicio de Perfiles&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: Microservicio Python / gRPC]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Gestiona hojas de vida, verifica estatus institucional y expone &lt;i&gt;VerificarElegibilidad&lt;/i&gt;." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="90" y="615" width="260" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms_postulaciones" value="&lt;b&gt;Servicio de Postulaciones&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: Microservicio Python / gRPC]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Registra postulaciones, evita duplicados y valida elegibilidad en tiempo real." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="510" y="615" width="260" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms_ofertas" value="&lt;b&gt;Servicio de Ofertas y Scraping&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: Microservicio / Recolector]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Administra vacantes de empresas, validación UTEQ e importación de portales externos." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="860" y="615" width="260" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ms_notificaciones" value="&lt;b&gt;Servicio de Notificaciones&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;[Contenedor: Microservicio Asíncrono]&lt;/font&gt;&lt;br&gt;&lt;br&gt;Procesa alertas personalizadas de vacantes y envío de códigos 2FA." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#438DD5;strokeColor=#2E6295;fontColor=#FFFFFF;fontSize=12;spacing=6;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="615" width="260" height="125" as="geometry" />
+        </mxCell>
+
+        <!-- CONEXIONES SINCRONAS -->
+        <mxCell id="e_grad_web" value="Usa la plataforma&lt;br&gt;[HTTPS / TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.12;entryY=0;" edge="1" parent="1" source="p_graduado" target="c_webapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_emp_web" value="Publica y revisa vacantes&lt;br&gt;[HTTPS / TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="p_empresa" target="c_webapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_adm_web" value="Administra y audita&lt;br&gt;[HTTPS / TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.88;entryY=0;" edge="1" parent="1" source="p_admin" target="c_webapp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_web_gw" value="Consume API REST&lt;br&gt;[HTTPS / JSON / TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_webapp" target="c_gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_gw_perfiles" value="Enruta gestión de perfiles&lt;br&gt;[gRPC / mTLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.1;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_gateway" target="ms_perfiles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_gw_postulaciones" value="Enruta postulaciones&lt;br&gt;[gRPC / mTLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.42;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_gateway" target="ms_postulaciones">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_gw_ofertas" value="Consulta y valida ofertas&lt;br&gt;[gRPC / mTLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.85;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="c_gateway" target="ms_ofertas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_post_perf" value="Verifica elegibilidad&lt;br&gt;[gRPC / mTLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#333333;fontColor=#1A1A1A;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="ms_postulaciones" target="ms_perfiles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
