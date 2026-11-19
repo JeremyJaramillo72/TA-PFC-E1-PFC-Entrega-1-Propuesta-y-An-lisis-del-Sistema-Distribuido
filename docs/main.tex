@@ -1,0 +1,210 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=ieee]{biblatex}
+
+\addbibresource{referencias.bib}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\begin{document}
+
+% ============================================================
+% 1. PORTADA OFICIAL
+% ============================================================
+\begin{titlepage}
+    \centering
+    {\Large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}}\\[0.3cm]
+    {\large Facultad de Ciencias de la Ingeniería}\\[0.2cm]
+    {\large Carrera de Ingeniería en Software}\\[1.5cm]
+
+    \rule{\linewidth}{0.5mm}\\[0.4cm]
+    {\LARGE \textbf{Bolsa de Empleos para Graduados de la UTEQ: Definición, Requisitos y Arquitectura Base del Sistema Distribuido}}\\[0.2cm]
+    {\large Proyecto Fin de Curso — Entrega 1 (\texttt{TA-PFC-E1})}\\[0.3cm]
+    \rule{\linewidth}{0.5mm}\\[1.5cm]
+
+    \textbf{Asignatura:} Aplicaciones Distribuidas (\texttt{ISR-701})\\[0.2cm]
+    \textbf{Periodo académico:} SPA 2026--2027\\[0.2cm]
+    \textbf{Fecha de entrega:} Noviembre de 2026\\[1.2cm]
+
+    \textbf{Integrantes y roles del equipo:}\\[0.4cm]
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Integrante} & \textbf{Rol en el proyecto} \\
+        \midrule
+        Luis Jeremy Jaramillo Acosta & Arquitecto \\
+        Kenny Isaías España Vera & Líder de Desarrollo \\
+        Heiner Ariel Zambrano Ronquillo & Responsable de Calidad \\
+        Luis Alberto Paca Pilataza & Responsable de Documentación \\
+        \bottomrule
+    \end{tabular}\\[1.5cm]
+
+    \textbf{Repositorio público del proyecto:}\\
+    \url{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}
+    \vfill
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+% 2. RESUMEN EJECUTIVO
+% ============================================================
+\section{Resumen ejecutivo}
+% Completar con 300 a 400 palabras en Sesión 3 una vez integrados los resultados del levantamiento real.
+Este documento presenta la definición, especificación de requisitos y arquitectura distribuida base de la plataforma \textbf{Bolsa de Empleos para Graduados de la UTEQ}, correspondiente a la Entrega 1 (\texttt{TA-PFC-E1}) del Proyecto Fin de Curso.
+
+% ============================================================
+% 3. CONTEXTO Y PROBLEMA
+% ============================================================
+\section{Contexto y problema}
+% Incorporar datos trazables al levantamiento real (Evidencia 1), actores y stakeholders.
+
+% ============================================================
+% 4. OBJETIVOS
+% ============================================================
+\section{Objetivos}
+\subsection{Objetivo general}
+% Redactar objetivo general del sistema distribuido.
+
+\subsection{Objetivos específicos e indicadores de verificación}
+% Incluir entre 3 y 5 objetivos específicos medibles con su indicador.
+
+% ============================================================
+% 5. TRABAJOS RELACIONADOS
+% ============================================================
+\section{Trabajos relacionados}
+% Analizar al menos 3 sistemas o estudios publicados respaldados en referencias.bib.
+
+% ============================================================
+% 6. REQUISITOS DEL SISTEMA
+% ============================================================
+\section{Requisitos del sistema}
+\subsection{Requisitos funcionales (Historias de usuario)}
+% Redactar al menos 10 historias de usuario con criterios de aceptación trazables a la Evidencia 1.
+
+\subsection{Requisitos no funcionales (ISO/IEC 25010)}
+% Redactar al menos 6 RNF cuantificados asociados a características de la norma ISO/IEC 25010.
+
+% ============================================================
+% 7. JUSTIFICACIÓN DE LA ARQUITECTURA DISTRIBUIDA
+% ============================================================
+\section{Justificación de la arquitectura distribuida}
+% Contrastar microservicios frente a monolito apoyado en los RNF.
+
+% ============================================================
+% 8. ARQUITECTURA BASE CON EL MODELO C4
+% ============================================================
+\section{Arquitectura base con el modelo C4}
+\subsection{Diagrama de contexto (Nivel 1)}
+% Insertar docs/figuras/c4-nivel1-contexto.png
+
+\subsection{Diagrama de contenedores (Nivel 2)}
+% Insertar docs/figuras/c4-nivel2-contenedores.png
+
+% ============================================================
+% 9. MODELO DE COMUNICACIÓN ENTRE SERVICIOS
+% ============================================================
+\section{Modelo de comunicación entre servicios}
+% Tabla de interacciones (síncrona/asíncrona, REST/gRPC/AMQP y justificación con mediciones de PE-U1).
+
+% ============================================================
+% 10. ANÁLISIS CAP Y PACELC
+% ============================================================
+\section{Análisis CAP y PACELC del proyecto}
+% Analizar datos críticos (postulaciones, estado de ofertas, perfiles, ofertas externas) y consecuencias al usuario.
+
+% ============================================================
+% 11. REGISTROS DE DECISIONES DE ARQUITECTURA (ADR)
+% ============================================================
+\section{Registros de decisiones de arquitectura (ADR)}
+Los registros completos se versionan en formato Markdown dentro de \texttt{/docs/adr/}. A continuación se resumen las dos decisiones fundamentales aprobadas por el equipo:
+
+\begin{itemize}
+    \item \textbf{ADR-001 (Estilo de arquitectura — \texttt{docs/adr/ADR-001-estilo-arquitectura.md}):} Se adopta una arquitectura de microservicios desacoplados orientados a dominio detrás de un \textit{API Gateway} para aislar la carga intensiva de ingesta externa (\textit{web scraping}) de las transacciones interactivas de perfiles, validación de vacantes y postulaciones.
+    \item \textbf{ADR-002 (Mecanismo de comunicación — \texttt{docs/adr/ADR-002-mecanismo-comunicacion.md}):} Se adopta gRPC sobre HTTP/2 con Protocol Buffers como mecanismo síncrono interno principal por su tipado estricto y menor latencia de serialización, reservando REST/JSON para el borde público y mensajería asíncrona (AMQP) para alertas e importación de ofertas externas.
+\end{itemize}
+
+% ============================================================
+% 12. ANÁLISIS DE RIESGOS
+% ============================================================
+\section{Análisis de riesgos}
+% Incluir al menos 5 riesgos técnicos (probabilidad, impacto, mitigación), con al menos 3 derivados de FORM-AC-01.
+
+% ============================================================
+% 13. PLAN DEL PROYECTO
+% ============================================================
+\section{Plan del proyecto}
+\subsection{Roles y responsabilidades}
+\begin{table}[h!]
+\centering
+\caption{Distribución de roles y responsabilidades del equipo.}
+\begin{tabular}{p{4.5cm}p{3.5cm}p{6.5cm}}
+\toprule
+\textbf{Integrante} & \textbf{Rol} & \textbf{Responsabilidades principales} \\
+\midrule
+Luis Jeremy Jaramillo Acosta & Arquitecto & Diseño de arquitectura C4, ADR-001, análisis CAP/PACELC y orquestación de contenedores. \\
+Kenny Isaías España Vera & Líder de Desarrollo & Definición de comunicación (ADR-002), desarrollo de microservicios, API y contratos gRPC. \\
+Heiner Ariel Zambrano Ronquillo & Responsable de Calidad & Especificación de RNF (ISO/IEC 25010), análisis de riesgos, pruebas de integración y verificación de evidencias. \\
+Luis Alberto Paca Pilataza & Responsable de Documentación & Gestión de \texttt{README.md}, \texttt{BITACORA.md}, compilación LaTeX, levantamiento de requisitos y trazabilidad bibliográfica. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tablero en GitHub Projects y cronograma de entregas}
+El seguimiento de tareas (\textit{issues}) de las entregas E1 y E2 se gestiona en el tablero público \textit{TA-PFC-E1 - Bolsa de Empleos UTEQ} vinculado al repositorio. La Tabla~\ref{tab:cronograma} presenta el cronograma de las cuatro entregas alineado con el calendario de la asignatura.
+
+\begin{table}[h!]
+\centering
+\caption{Cronograma oficial de entregas del Proyecto Fin de Curso.}
+\label{tab:cronograma}
+\begin{tabular}{llccp{6.5cm}}
+\toprule
+\textbf{Entrega} & \textbf{Código} & \textbf{Sem.} & \textbf{Fechas} & \textbf{Alcance técnico principal} \\
+\midrule
+E1 & \texttt{TA-PFC-E1} & 5 & 23--29 nov 2026 & Definición, requisitos, C4, ADR, CAP/PACELC y esqueleto gRPC. \\
+E2 & \texttt{TA-PFC-E2} & 9 & 21--27 dic 2026 & Microservicios funcionales, API Gateway y contenedores Docker. \\
+E3 & \texttt{TA-PFC-E3} & 13 & 18--24 ene 2027 & Base de datos distribuida, replicación y procesamiento externo. \\
+E4 & \texttt{TA-PFC-E4} & 17 & 15--21 feb 2027 & Sistema final en capas, calidad ISO/IEC 25010, pruebas y defensa. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% 14. ESQUELETO FUNCIONAL
+% ============================================================
+\section{Esqueleto funcional en el repositorio}
+El esqueleto técnico implementa dos servicios mínimos en Python bajo \texttt{/src/} que se comunican mediante gRPC (\texttt{proto/bolsa\_uteq.proto}): \texttt{servicio\_perfiles} (servidor en puerto 50051) y \texttt{servicio\_postulaciones} (cliente que invoca \texttt{VerificarElegibilidad}). Las instrucciones de ejecución se detallan en \texttt{README.md}.
+
+% ============================================================
+% 15. TABLA DE APORTES
+% ============================================================
+\section{Tabla de aportes}
+% Completar en Sesión 4 con enlaces exactos a todos los commits e issues de cada integrante.
+
+% ============================================================
+% 16. DECLARACIÓN DE USO DE INTELIGENCIA ARTIFICIAL
+% ============================================================
+\section{Declaración de uso de inteligencia artificial}
+% Declarar herramienta, versión, propósito específico y método de verificación aplicado.
+
+% ============================================================
+% 17. REFERENCIAS
+% ============================================================
+\printbibliography[title={Referencias}]
+
+\end{document}
