@@ -1,4 +1,4 @@
-# Bitácora del equipo
+``# Bitácora del equipo
 
 Proyecto: **Bolsa de Empleos para Graduados UTEQ — Sistema Distribuido (PFC)**
 Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
@@ -82,6 +82,35 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
+## Sesión 3 — 19/11/2026
+
+- **Hora:** 09:30 – 11:30 (aprox.)
+- **Modalidad:** Virtual — Discord / WhatsApp
+- **Presentes:** Luis Jeremy Jaramillo Acosta, Kenny Isaías España Vera, Heiner Ariel Zambrano Ronquillo, Luis Alberto Paca Pilataza
+
+### Temas tratados
+1. Integración en `docs/main.tex` de la vista de contexto C4 Nivel 1 (`docs/figuras/c4-nivel1-contexto.png`), el modelo híbrido de comunicación (ADR-002) y el análisis CAP/PACELC.
+2. Síntesis formal de `ADR-001` y `ADR-002` y documentación del contrato `proto/bolsa_uteq.proto` junto con las 3 capturas reales del esqueleto gRPC.
+3. Compilación verificada de `docs/main.pdf` con `pdflatex` + `biber` (estilo IEEE).
+4. Coordinación de entregables del Día 3 (C4 Nivel 2, manejo de fallos/duplicados gRPC y pruebas automatizadas con medición de latencia).
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D10 | Consolidar las secciones de arquitectura (C4-N1, comunicación, CAP/PACELC, ADR) y el esqueleto funcional con sus evidencias dentro de `docs/main.tex`, compilando `docs/main.pdf` para validación continua. | Luis Paca | `docs/main.tex`, `docs/main.pdf` — issue #16 |
+| D11 | Mantener consistencia fuerte (`CP / PC-EC`) para Perfiles y Postulaciones y consistencia eventual (`AP / PA-EL`) para Catálogo de Ofertas/Scraping y Notificaciones. | Todo el equipo | `docs/main.tex` (Tabla 3) — issue #16 |
+| D12 | Avanzar en paralelo el Día 3 con C4 Nivel 2 (Jeremy), manejo de fallos gRPC y control de duplicados (Kenny) y suite de pruebas automatizadas con medición de latencia (Heiner). | Todo el equipo | Tablero `TA-PFC-E1 - Bolsa de Empleos UTEQ` |
+
+### Problemas resueltos
+- Al compilar `docs/main.tex` con `pdflatex` + `babel-spanish`, `\,\%` dentro del modo matemático en `RNF-02` generaba errores `Incompatible glue units` y la columna `ISO/IEC 25010` provocaba un desbordamiento en la Tabla 1; se movió `\,\%` fuera del modo matemático y se fijó ancho explícito (`p{3.6cm}`), logrando 0 errores y 9/9 citas IEEE resueltas.
+
+### Pendientes para la próxima sesión
+- [ ] Integrar el diagrama C4 Nivel 2 (Contenedores) y los resultados de pruebas unitarias y de latencia en `docs/main.tex`.
+- [ ] Completar el levantamiento real de información (encuesta o entrevista UTEQ) y subir la evidencia correspondiente en `evidencias/`.
+- [ ] Realizar la sesión de bosquejo colaborativo y cargar las 2 fotografías del bosquejo en `evidencias/`.
+
+---
+
 <!-- Plantilla para nuevas sesiones (copiar debajo)
 
 ## Sesión N — DD/MM/2026
@@ -104,3 +133,4 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 - [ ]
 
 -->
+``

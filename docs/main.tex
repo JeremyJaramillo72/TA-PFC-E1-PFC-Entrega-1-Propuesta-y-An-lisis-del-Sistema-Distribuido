@@ -103,12 +103,12 @@ La Tabla~\ref{tab:rnf} especifica los requisitos no funcionales cuantificados y 
 \centering
 \caption{Requisitos no funcionales cuantificados bajo la norma ISO/IEC 25010.}
 \label{tab:rnf}
-\begin{tabularx}{\textwidth}{l l X l}
+\begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}p{3.6cm} X l}
 \toprule
 \textbf{Cód.} & \textbf{ISO/IEC 25010} & \textbf{Requisito cuantificado} & \textbf{Verificación} \\
 \midrule
 RNF-01 & Eficiencia de desempeño (Comportamiento temporal) & El 95\,\% ($p95$) de las consultas de catálogo y validaciones gRPC de elegibilidad responde en $\le 300\text{ ms}$ con 50 usuarios simultáneos. & Pruebas de carga \\
-RNF-02 & Fiabilidad (Disponibilidad) & Disponibilidad operativa $\ge 99{,}5\,\%$ mensual en servicios núcleo; la caída del módulo de \textit{scraping} o correo no interrumpe postulaciones. & Pruebas de fallos \\
+RNF-02 & Fiabilidad (Disponibilidad) & Disponibilidad operativa $\ge 99{,}5$\,\% mensual en servicios núcleo; la caída del módulo de \textit{scraping} o correo no interrumpe postulaciones. & Pruebas de fallos \\
 RNF-03 & Eficiencia de desempeño (Capacidad) & El servicio de búsqueda y el recolector externo escalan horizontalmente de 1 a 3 réplicas en $< 60\text{ s}$ sin afectar al servicio de perfiles. & Contenedores Docker \\
 RNF-04 & Seguridad (Confidencialidad e integridad) & 100\,\% del tráfico externo cifrado con TLS 1.3, contraseñas protegidas con \textit{hash} robusto (Argon2/bcrypt) y control de acceso RBAC. & Auditoría técnica \\
 RNF-05 & Fiabilidad (Tolerancia a fallos) & 0 postulaciones duplicadas ante reintentos de red (operación idempotente) y tiempo de recuperación (RTO) $\le 5\text{ min}$ tras reinicio de contenedor. & Pruebas de integración \\
@@ -121,16 +121,130 @@ RNF-06 & Mantenibilidad (Analizabilidad) & 100\,\% de las validaciones administr
 % Pendiente: contrastar microservicios vs monolito apoyado en los RNF.
 
 \section{Arquitectura base (Modelo C4)}
-% Pendiente: integrar diagramas C4 Nivel 1 (Contexto) y Nivel 2 (Contenedores).
+
+Para comunicar la estructura del sistema distribuido en niveles progresivos de abstracción, se adopta el modelo C4 (\textit{Context, Containers, Components, Code}), en consonancia con las prácticas consolidadas de documentación de arquitecturas de software \cite{garces2021}. En esta primera entrega se consolida la vista de contexto (Nivel~1) y se deja reservada la vista de contenedores (Nivel~2).
+
+\subsection{Diagrama de contexto (C4 Nivel 1)}
+
+La Figura~\ref{fig:c4-nivel1} delimita el alcance de la plataforma \textbf{Bolsa de Empleos para Graduados UTEQ}, identificando los actores humanos que interactúan con el sistema y las dependencias externas necesarias para su operación.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figuras/c4-nivel1-contexto.png}
+    \caption{Diagrama de Contexto (C4 Nivel 1) de la Bolsa de Empleos para Graduados UTEQ.}
+    \label{fig:c4-nivel1}
+\end{figure}
+
+Los elementos ilustrados en la Figura~\ref{fig:c4-nivel1} se describen a continuación:
+
+\begin{itemize}
+    \item \textbf{Actores (Personas):}
+    \begin{itemize}
+        \item \textbf{Graduado UTEQ:} gestiona su perfil profesional y hoja de vida, busca vacantes, guarda favoritos y se postula a ofertas mediante el canal seguro \texttt{HTTPS / JSON}. Adicionalmente, recibe correos electrónicos con alertas personalizadas y códigos de verificación de doble factor (2FA) despachados por el servicio de correo externo.
+        \item \textbf{Empresa Colaboradora:} publica, edita y da de baja ofertas laborales; asimismo, revisa y gestiona a los postulantes de sus convocatorias mediante \texttt{HTTPS / JSON}.
+        \item \textbf{Administrador UTEQ:} valida ofertas registradas por empresas, gestiona cuentas de usuarios, audita acciones críticas y emite reportes institucionales a través de \texttt{HTTPS / JSON}.
+    \end{itemize}
+    \item \textbf{Sistema central (Alcance):}
+    \begin{itemize}
+        \item \textbf{Bolsa de Empleos para Graduados UTEQ:} sistema de software distribuido basado en microservicios que centraliza las vacantes validadas por la UTEQ, las ofertas importadas desde portales externos, el flujo de postulaciones y el sistema de alertas.
+    \end{itemize}
+    \item \textbf{Sistemas externos:}
+    \begin{itemize}
+        \item \textbf{Servicio de Correo (SMTP):} servidor externo al cual el sistema se conecta mediante \texttt{SMTP / TLS} para despachar correos de verificación, códigos de doble factor (2FA) y alertas personalizadas de nuevas ofertas hacia los graduados.
+        \item \textbf{Portales Laborales Externos:} sitios web de empleo de terceros desde donde la plataforma recolecta ofertas y verifica su vigencia periódicamente mediante \texttt{HTTPS / Web Scraping}, manteniéndolas etiquetadas como vacantes externas.
+        \item \textbf{Padrón / Identidad UTEQ:} sistema institucional externo consultado vía \texttt{HTTPS / REST} para validar credenciales universitarias y verificar el estatus académico de habilitación del graduado.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Diagrama de contenedores (C4 Nivel 2)}
+% Pendiente: integrar el Diagrama C4 Nivel 2 (Contenedores) y describir cada contenedor, almacén de datos y canal de comunicación interna.
 
 \section{Modelo de comunicación entre servicios}
-% Pendiente: tabla de interacciones (sincronica/asincronica, REST/gRPC/AMQP) enlazada con PE-U1.
+
+De acuerdo con la decisión establecida en \texttt{ADR-002}, la plataforma implementa un \textbf{modelo de comunicación híbrido} que separa los protocolos de borde público, las invocaciones síncronas internas y los eventos asíncronos según la criticidad y el perfil de latencia de cada interacción. La literatura sistemática sobre patrones de comunicación en microservicios señala que esta combinación reduce el acoplamiento operativo y evita que procesos lentos degraden el rendimiento de las rutas transaccionales \cite{aksakalli2021,waseem2021}.
+
+El modelo se articula en tres planos complementarios:
+\begin{enumerate}
+    \item \textbf{Fachada externa (\texttt{HTTPS / REST} con JSON):} reservada exclusivamente para la comunicación entre el cliente web y el \textit{API Gateway}, asegurando compatibilidad con navegadores, cifrado TLS~1.3 y control de acceso RBAC (RNF-04).
+    \item \textbf{Comunicación síncrona interna (\texttt{gRPC} sobre HTTP/2 con Protocol Buffers):} utilizada como mecanismo principal entre microservicios para llamadas que exigen respuesta inmediata y contratos binarios fuertemente tipados, tales como la validación en tiempo real de elegibilidad del graduado (RF-02) y la comprobación de aprobación de vacantes antes de confirmar una postulación (RF-05), favoreciendo el cumplimiento del umbral $p95 \le 300\text{ ms}$ (RNF-01).
+    \item \textbf{Comunicación asíncrona orientada a eventos (\texttt{AMQP}):} empleada mediante colas de mensajería para el envío de alertas por correo electrónico y la sincronización periódica de vacantes recolectadas por \textit{web scraping} (RF-10), evitando bloquear las respuestas al usuario y garantizando aislamiento ante fallos parciales (RNF-02).
+\end{enumerate}
+
+La Tabla~\ref{tab:comunicacion} detalla las interacciones principales entre servicios internos y sistemas externos.
+
+\begin{table}[htbp]
+\centering
+\caption{Modelo híbrido de comunicación entre servicios y sistemas externos (según ADR-002).}
+\label{tab:comunicacion}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.3cm} l X}
+\toprule
+\textbf{Origen} & \textbf{Destino} & \textbf{Protocolo} & \textbf{Tipo} & \textbf{Propósito} \\
+\midrule
+Cliente Web & API Gateway & HTTPS / REST (JSON) & Síncrono & Interacción de graduados, empresas y administradores; autenticación, control RBAC y enrutamiento de solicitudes. \\
+API Gateway & Perfiles, Ofertas y Postulaciones & gRPC (HTTP/2 + Protobuf) & Síncrono & Despacho interno de operaciones transaccionales de perfiles, búsqueda, validación administrativa y postulaciones. \\
+Postulaciones & Perfiles & gRPC (HTTP/2 + Protobuf) & Síncrono & Verificación inmediata de elegibilidad del graduado mediante \texttt{VerificarElegibilidad} (RF-02). \\
+Postulaciones & Ofertas y Validación & gRPC (HTTP/2 + Protobuf) & Síncrono & Confirmación de que la vacante se encuentra aprobada y vigente antes de registrar la solicitud (RF-05). \\
+Postulaciones / Ofertas & Notificaciones (vía bróker) & AMQP & Asíncrono & Publicación de eventos de postulación, cambios de estado y nuevas vacantes aprobadas para despacho de alertas (RF-10). \\
+Ingesta Externa & Ofertas y Validación (vía bróker) & AMQP & Asíncrono & Envío desacoplado de vacantes recolectadas de portales externos y actualizaciones de vigencia para el catálogo (RF-10). \\
+Perfiles & Padrón / Identidad UTEQ & HTTPS / REST & Síncrono & Validación de credenciales institucionales y estatus académico del graduado frente al sistema externo UTEQ. \\
+Ingesta Externa & Portales Laborales Externos & HTTPS (\textit{Web Scraping}) & Asíncrono & Recolección periódica en segundo plano y comprobación de vigencia de vacantes publicadas en sitios de terceros. \\
+Notificaciones & Servicio de Correo (SMTP) & SMTP / TLS & Asíncrono & Envío diferido de correos de verificación, códigos 2FA y alertas personalizadas de empleo a los graduados. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Análisis CAP y PACELC}
-% Pendiente: analisis por dato critico (postulaciones, perfiles, ofertas externas).
+
+En una arquitectura de microservicios con persistencia independiente por dominio (\textit{database per service}), los datos críticos no pueden regirse por una política uniforme de consistencia; cada servicio debe equilibrar garantías de datos y rendimiento conforme a su semántica de negocio \cite{laigner2021}. Según el \textbf{teorema CAP}, frente a una partición de red ($P$) entre nodos distribuidos, el sistema debe escoger entre \textbf{consistencia fuerte ($C$)} —asegurando que toda lectura observe la escritura confirmada más reciente o rechazando la operación— o \textbf{alta disponibilidad ($A$)}, continuando la atención de solicitudes a costa de divergencias temporales.
+
+La extensión \textbf{PACELC} complementa dicho análisis al modelar también la operación normal sin particiones ($E$, \textit{else}), donde persiste un compromiso entre \textbf{baja latencia ($L$)} y \textbf{consistencia ($C$)} debido al costo de replicación síncrona y coordinación distribuida \cite{laigner2021,blinowski2022}. Aplicando ambos marcos a los datos críticos de la Bolsa de Empleos UTEQ se distinguen dos perfiles:
+
+\begin{itemize}
+    \item \textbf{Perfiles y Postulaciones (CP / PC-EC):} gestionan el padrón de elegibilidad (RF-01, RF-02), el registro idempotente de postulaciones (RF-05, RNF-05) y el historial de estados revisados por las empresas (RF-06, RF-08). Una lectura obsoleta o escritura divergente podría autorizar a un egresado no habilitado o generar postulaciones duplicadas; por tanto, ante particiones se prioriza la consistencia sobre la disponibilidad ($PC$) y en operación normal se mantiene consistencia fuerte sobre la mínima latencia ($EC$).
+    \item \textbf{Catálogo de Ofertas / \textit{Scraping} y Notificaciones (AP / PA-EL):} atienden consultas frecuentes de búsqueda y filtrado de vacantes (RF-03), sincronización periódica de portales externos y envío diferido de alertas por correo (RF-10). En estos módulos resulta aceptable la consistencia eventual de segundos o minutos mientras se asegure alta disponibilidad frente a fallos parciales ($PA$) y tiempos de respuesta reducidos en operación normal ($EL$), respaldando los requisitos RNF-01 y RNF-02.
+\end{itemize}
+
+La Tabla~\ref{tab:cap-pacelc} resume la clasificación CAP y PACELC por microservicio y dato crítico.
+
+\begin{table}[htbp]
+\centering
+\caption{Análisis CAP y PACELC aplicado a los microservicios y datos críticos del sistema.}
+\label{tab:cap-pacelc}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.8cm} c c X}
+\toprule
+\textbf{Microservicio} & \textbf{Dato crítico} & \textbf{CAP} & \textbf{PACELC} & \textbf{Justificación técnica y estrategia} \\
+\midrule
+Perfiles & Padrón de graduados, estatus de habilitación y perfil académico & CP & PC-EC & Exige consistencia fuerte para validar elegibilidad en tiempo real (RF-02); ante partición se rechaza la consulta antes que autorizar graduados no habilitados. \\
+Postulaciones & Registro de postulaciones, control de duplicados e historial de estados & CP & PC-EC & Garantiza cero postulaciones duplicadas mediante claves de idempotencia (RF-05, RNF-05) e integridad en las actualizaciones de estado (RF-06, RF-08). \\
+Ofertas y Validación / Ingesta Externa & Catálogo de vacantes vigentes y ofertas recolectadas vía \textit{scraping} & AP & PA-EL & Prioriza disponibilidad del catálogo (RF-03) y baja latencia ($p95 \le 300\text{ ms}$, RNF-01), aceptando consistencia eventual al propagar ofertas externas o aprobadas (RF-10). \\
+Notificaciones & Cola de alertas personalizadas, avisos de estado y correos 2FA & AP & PA-EL & Procesamiento asíncrono sobre AMQP con consistencia eventual y reintentos; una indisponibilidad del servidor SMTP no interrumpe los servicios núcleo (RNF-02). \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Registros de decisiones de arquitectura (ADR)}
-% Pendiente: resumen de ADR-001 y ADR-002 ubicados en docs/adr/.
+
+Para documentar de manera trazable y verificable las decisiones estructurales del proyecto, el equipo mantiene \textbf{Registros de Decisiones de Arquitectura (ADR)} versionados junto al código fuente en \texttt{docs/adr/}. La literatura en ingeniería de software demuestra que los ADRs ligeros integrados al repositorio facilitan la toma de decisiones en entornos ágiles, conservan el contexto histórico de las alternativas descartadas y mejoran la mantenibilidad del sistema a largo plazo \cite{keeling2022,buchgeher2023}. A continuación se sintetizan fielmente las decisiones aceptadas en la Entrega~1.
+
+\subsection{ADR-001: Selección del estilo de arquitectura distribuida}
+
+\begin{itemize}
+    \item \textbf{Archivo fuente:} \texttt{docs/adr/ADR-001-estilo-arquitectura.md} (Estado: Aceptado; Fecha: 17/11/2026; Autor: Luis Jeremy Jaramillo Acosta, Arquitecto).
+    \item \textbf{Contexto:} la Bolsa de Empleos para Graduados UTEQ debe sostener simultáneamente dos cargas de trabajo con comportamiento operativo opuesto: (1)~operaciones transaccionales interactivas (gestión de perfiles académicos, validación administrativa de vacantes por la coordinación de carrera y registro de postulaciones directas) que exigen baja latencia y alta disponibilidad durante el periodo académico; y (2)~ingesta periódica desde portales externos (\textit{web scraping}), intensiva en entrada/salida de red y sujeta a latencias variables o bloqueos de terceros.
+    \item \textbf{Opciones evaluadas y decisión:} se descartaron la arquitectura monolítica en capas con base de datos única (un pico o bloqueo del \textit{scraping} degradaría las postulaciones en vivo y obligaría a redesplegar todo el sistema ante cambios en extractores) y SOA con ESB centralizado (complejidad operativa elevada y punto único de fallo para un equipo de cuatro integrantes). Se decidió adoptar una \textbf{arquitectura de microservicios desacoplados orientados a dominio} (\texttt{Perfiles}, \texttt{Ofertas y Validación}, \texttt{Postulaciones}, \texttt{Ingesta Externa} y \texttt{Notificaciones}), cada uno con persistencia propia y despliegue como contenedores independientes detrás de un \textit{API Gateway}.
+    \item \textbf{Consecuencias:} positivamente, aporta aislamiento de fallos entre la ingesta externa y el flujo crítico de postulaciones, escalado horizontal selectivo según demanda y despliegue modular en las entregas E2 a E4. Negativamente, exige gestionar consistencia eventual para ofertas importadas y notificaciones por correo, así como mantener contratos de interfaz estrictos entre servicios.
+\end{itemize}
+
+\subsection{ADR-002: Mecanismo de comunicación principal entre servicios}
+
+\begin{itemize}
+    \item \textbf{Archivo fuente:} \texttt{docs/adr/ADR-002-mecanismo-comunicacion.md} (Estado: Aceptado; Fecha: 17/11/2026; Autor: Kenny Isaías España Vera, Líder de Desarrollo).
+    \item \textbf{Contexto:} al dividir el sistema en microservicios, el servicio de postulaciones necesita verificar de forma síncrona e inmediata que el graduado esté habilitado en el padrón y que la vacante se encuentre aprobada antes de confirmar la solicitud; por el contrario, el envío de alertas por correo electrónico y la sincronización periódica de vacantes externas pueden ejecutarse sin bloquear la respuesta al usuario.
+    \item \textbf{Opciones evaluadas y decisión:} se descartaron REST/JSON sobre HTTP/1.1 entre todos los servicios internos (mayor sobrecarga de serialización textual y falta de validación estricta de contratos binarios en compilación) y la mensajería asíncrona pura para todos los flujos (complicaría innecesariamente la validación inmediata de elegibilidad en una postulación interactiva). Se decidió establecer \textbf{gRPC sobre HTTP/2 con Protocol Buffers} como mecanismo principal de comunicación síncrona interna, manteniendo \textbf{REST/JSON} únicamente en la fachada externa (\textit{API Gateway} hacia el cliente web) y \textbf{mensajería asíncrona (AMQP)} para notificaciones y sincronización de ofertas externas.
+    \item \textbf{Consecuencias:} positivamente, ofrece contratos de interfaz explícitos y versionables en \texttt{proto/}, menor latencia de serialización y transporte frente a JSON textual y generación automática de clientes y servidores. Negativamente, requiere compilar el archivo \texttt{.proto} ante cambios de esquema y emplear clientes gRPC específicos para pruebas de integración.
+\end{itemize}
 
 \section{Análisis de riesgos técnicos}
 % Pendiente: minimo 5 riesgos (al menos 3 derivados del incidente de FORM-AC-01).
@@ -169,7 +283,70 @@ TA-PFC-E4 & 17 & 15 -- 21 feb 2027 & Sistema final en capas bajo ISO/IEC 25010, 
 \end{table}
 
 \section{Esqueleto funcional y evidencia de ejecución}
-% Pendiente: documentar contrato proto/bolsa_uteq.proto, servicio_perfiles, servicio_postulaciones y capturas.
+
+Con el propósito de validar la comunicación síncrona interna definida en \texttt{ADR-002} y el requisito funcional RF-02, se implementó un esqueleto funcional en Python con \texttt{grpcio} compuesto por dos procesos independientes:
+\begin{itemize}
+    \item \textbf{Servidor gRPC (\texttt{servicio\_perfiles}):}\\ \texttt{src/servicio\_perfiles/servidor\_perfiles.py}
+    \item \textbf{Cliente gRPC (\texttt{servicio\_postulaciones}):}\\ \texttt{src/servicio\_postulaciones/cliente\_postulaciones.py}
+\end{itemize}
+
+\subsection{Contrato gRPC (\texttt{proto/bolsa\_uteq.proto})}
+
+El contrato de interfaz se define en \texttt{proto3} dentro de \texttt{proto/bolsa\_uteq.proto}, bajo el paquete \texttt{bolsa\_uteq}. Declara el servicio \texttt{PerfilService} con el procedimiento remoto unario \texttt{VerificarElegibilidad}, que recibe un mensaje \texttt{ConsultaGraduadoRequest} y devuelve un mensaje \texttt{ElegibilidadResponse}. La Tabla~\ref{tab:contrato-proto} especifica de forma exacta el servicio, la operación y todos los campos definidos en el contrato.
+
+\begin{table}[htbp]
+\centering
+\caption{Contrato real definido en \texttt{proto/bolsa\_uteq.proto} (\texttt{syntax = "proto3"}, paquete \texttt{bolsa\_uteq}).}
+\label{tab:contrato-proto}
+\small
+\begin{tabularx}{\textwidth}{l l c >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Operación / Campo} & \textbf{Tipo} & \textbf{Etiqueta} & \textbf{Descripción} \\
+\midrule
+\multicolumn{4}{l}{\textbf{Servicio \texttt{PerfilService}}} \\
+\texttt{VerificarElegibilidad} & RPC unario & --- & Recibe \texttt{ConsultaGraduadoRequest} y retorna \texttt{ElegibilidadResponse}. \\
+\midrule
+\multicolumn{4}{l}{\textbf{Mensaje \texttt{ConsultaGraduadoRequest} (solicitud)}} \\
+\texttt{cedula\_o\_id} & \texttt{string} & 1 & Cédula o identificador del graduado a verificar. \\
+\texttt{codigo\_oferta} & \texttt{string} & 2 & Código de la vacante laboral consultada. \\
+\midrule
+\multicolumn{4}{l}{\textbf{Mensaje \texttt{ElegibilidadResponse} (respuesta)}} \\
+\texttt{elegible} & \texttt{bool} & 1 & Indicador booleano de habilitación del graduado. \\
+\texttt{nombre\_completo} & \texttt{string} & 2 & Nombre completo registrado (o \texttt{"No registrado"}). \\
+\texttt{carrera} & \texttt{string} & 3 & Carrera registrada en el padrón (o \texttt{"N/A"}). \\
+\texttt{motivo} & \texttt{string} & 4 & Mensaje explicativo del resultado de verificación. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Los \textit{stubs} generados (\path{bolsa_uteq_pb2.py} y \path{bolsa_uteq_pb2_grpc.py}) se almacenan en \path{src/generated/} y se regeneran con el script \path{scripts/generar_stubs.py}. Para esta entrega, \path{servidor_perfiles.py} expone \texttt{PerfilService} en el puerto \texttt{50051} (con un grupo de 4 hilos de atención) consultando un padrón inicial en memoria (\texttt{GRADUADOS\_UTEQ}), mientras que \path{cliente_postulaciones.py} se conecta al destino configurado en \texttt{PERFILES\_ADDR} (por defecto \texttt{localhost:50051}) con un tiempo de espera de 5~s y captura controlada de errores \texttt{grpc.RpcError}.
+
+\subsection{Evidencias de ejecución del esqueleto}
+
+La verificación de la comunicación entre procesos se ejecutó el 19 de noviembre de 2026 en el equipo \texttt{HP} (usuario \texttt{hp\textbackslash heiner}), evaluando dos casos contra la oferta \texttt{OF-2026-001}: un graduado habilitado en el padrón (\texttt{ID=0000000002}) y una cédula ficticia no registrada (\texttt{ID=0999999999}).
+
+La Figura~\ref{fig:ejecucion-servidor} evidencia el inicio del servidor gRPC \texttt{servicio\_perfiles} (\texttt{PID=1268}) escuchando en el puerto \texttt{50051} junto con la salida de \texttt{whoami}, \texttt{hostname} y \texttt{Get-Date}. La Figura~\ref{fig:ejecucion-cliente} muestra la ejecución del cliente \texttt{servicio\_postulaciones} (\texttt{PID=21600}) recibiendo las respuestas \texttt{ELEGIBLE} y \texttt{NO ELEGIBLE}. Por último, la Figura~\ref{fig:ejecucion-conjunta} presenta ambas terminales en paralelo, verificando el registro correlacionado de solicitudes recibidas por el servidor y respuestas procesadas por el cliente a las \texttt{00:16:50}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_01.png}
+    \caption{Arranque del servidor gRPC \texttt{servicio\_perfiles} en el puerto 50051 (\texttt{Equipo=HP}, usuario \texttt{hp\textbackslash heiner}, \texttt{PID=1268}, 19 de noviembre de 2026 a las 00:16:47).}
+    \label{fig:ejecucion-servidor}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_02.png}
+    \caption{Ejecución del cliente gRPC \texttt{servicio\_postulaciones} (\texttt{PID=21600}) invocando \texttt{VerificarElegibilidad} hacia \texttt{localhost:50051} con resultado \texttt{ELEGIBLE} para \texttt{ID=0000000002} y \texttt{NO ELEGIBLE} para \texttt{ID=0999999999}.}
+    \label{fig:ejecucion-cliente}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_03.png}
+    \caption{Ejecución simultánea de \texttt{servicio\_perfiles} (terminal superior) y \texttt{servicio\_postulaciones} (terminal inferior), evidenciando la trazabilidad de solicitudes y respuestas gRPC a las 00:16:50 del 19 de noviembre de 2026.}
+    \label{fig:ejecucion-conjunta}
+\end{figure}
 
 \section{Tabla de aportes individuales}
 % Pendiente: consolidar enlaces a commits e issues cerrados por integrante antes de la entrega final.
