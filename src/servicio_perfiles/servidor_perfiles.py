@@ -18,13 +18,13 @@ GRADUADOS_UTEQ = {
         "habilitado": True,
     },
     # Cédula de prueba utilizada únicamente para fines demostrativos del código
-    "1206983421": {
+    "0000000002": {
         "nombre": "Kenny Isaías España Vera",
         "carrera": "Ingeniería en Software",
         "habilitado": True,
     },
     # Cédula de prueba utilizada únicamente para fines demostrativos del código
-    "1208145630": {
+    "0000000003": {
         "nombre": "Luis Paca",
         "carrera": "Ingeniería en Software",
         "habilitado": True,
