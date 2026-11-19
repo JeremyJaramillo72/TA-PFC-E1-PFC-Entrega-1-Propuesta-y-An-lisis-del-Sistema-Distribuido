@@ -14,7 +14,7 @@ TIEMPO_ESPERA_SEG = 5
 # Casos de prueba del esqueleto (E1): un graduado habilitado y una cédula no registrada
 CASOS_PRUEBA = [
     # Cédula de prueba utilizada únicamente para fines demostrativos del código
-    {"cedula_o_id": "1206983421", "codigo_oferta": "OF-2026-001"},
+    {"cedula_o_id": "0000000002", "codigo_oferta": "OF-2026-001"},
     # Cédula ficticia que no existe en el padrón, para validar el caso negativo
     {"cedula_o_id": "0999999999", "codigo_oferta": "OF-2026-001"},
 ]
