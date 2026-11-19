@@ -1,210 +1,182 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-tabla]{babel}
 \usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{array}
-\usepackage{longtable}
-\usepackage{hyperref}
-\usepackage{csquotes}
+\usepackage{tabularx}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
 \usepackage[backend=biber,style=ieee]{biblatex}
 
 \addbibresource{referencias.bib}
 
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
-}
-
 \begin{document}
 
-% ============================================================
-% 1. PORTADA OFICIAL
-% ============================================================
+% --- 1. PORTADA OFICIAL ---
 \begin{titlepage}
     \centering
-    {\Large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}}\\[0.3cm]
-    {\large Facultad de Ciencias de la Ingeniería}\\[0.2cm]
-    {\large Carrera de Ingeniería en Software}\\[1.5cm]
+    \vspace*{1cm}
+    {\Large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}}\\[0.2cm]
+    {\large Facultad de Ciencias de la Computación y Diseño Digital}\\[0.2cm]
+    {\large Carrera de Ingeniería en Software}\\[1.2cm]
 
     \rule{\linewidth}{0.5mm}\\[0.4cm]
-    {\LARGE \textbf{Bolsa de Empleos para Graduados de la UTEQ: Definición, Requisitos y Arquitectura Base del Sistema Distribuido}}\\[0.2cm]
-    {\large Proyecto Fin de Curso — Entrega 1 (\texttt{TA-PFC-E1})}\\[0.3cm]
-    \rule{\linewidth}{0.5mm}\\[1.5cm]
+    {\LARGE \textbf{Bolsa de Empleos para Graduados UTEQ}}\\[0.3cm]
+    {\large Proyecto Fin de Curso — Entrega 1 (TA-PFC-E1):\\Definición, Requisitos y Arquitectura Base del Sistema Distribuido}\\[0.2cm]
+    \rule{\linewidth}{0.5mm}\\[1.2cm]
 
-    \textbf{Asignatura:} Aplicaciones Distribuidas (\texttt{ISR-701})\\[0.2cm]
-    \textbf{Periodo académico:} SPA 2026--2027\\[0.2cm]
-    \textbf{Fecha de entrega:} Noviembre de 2026\\[1.2cm]
+    \textbf{Asignatura:} Aplicaciones Distribuidas (ISR-701)\\[0.2cm]
+    \textbf{Periodo académico:} SPA 2026--2027\\[0.8cm]
 
-    \textbf{Integrantes y roles del equipo:}\\[0.4cm]
-    \begin{tabular}{ll}
+    \textbf{Integrantes y roles del equipo:}\\[0.3cm]
+    \begin{tabular}{l l}
         \toprule
-        \textbf{Integrante} & \textbf{Rol en el proyecto} \\
+        \textbf{Estudiante} & \textbf{Rol asignado} \\
         \midrule
         Luis Jeremy Jaramillo Acosta & Arquitecto \\
         Kenny Isaías España Vera & Líder de Desarrollo \\
         Heiner Ariel Zambrano Ronquillo & Responsable de Calidad \\
         Luis Alberto Paca Pilataza & Responsable de Documentación \\
         \bottomrule
-    \end{tabular}\\[1.5cm]
+    \end{tabular}\\[1cm]
 
     \textbf{Repositorio público del proyecto:}\\
-    \url{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}
+    \url{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}\\[1.2cm]
+
     \vfill
+    {\large Quevedo, Los Ríos, Ecuador --- Noviembre de 2026}
 \end{titlepage}
 
 \tableofcontents
 \newpage
 
-% ============================================================
-% 2. RESUMEN EJECUTIVO
-% ============================================================
 \section{Resumen ejecutivo}
-% Completar con 300 a 400 palabras en Sesión 3 una vez integrados los resultados del levantamiento real.
-Este documento presenta la definición, especificación de requisitos y arquitectura distribuida base de la plataforma \textbf{Bolsa de Empleos para Graduados de la UTEQ}, correspondiente a la Entrega 1 (\texttt{TA-PFC-E1}) del Proyecto Fin de Curso.
+% Pendiente: redactar entre 300 y 400 palabras tras consolidar el levantamiento real y la arquitectura C4.
 
-% ============================================================
-% 3. CONTEXTO Y PROBLEMA
-% ============================================================
 \section{Contexto y problema}
-% Incorporar datos trazables al levantamiento real (Evidencia 1), actores y stakeholders.
 
-% ============================================================
-% 4. OBJETIVOS
-% ============================================================
-\section{Objetivos}
-\subsection{Objetivo general}
-% Redactar objetivo general del sistema distribuido.
+Los graduados de la Universidad Técnica Estatal de Quevedo (UTEQ) enfrentan una alta dispersión de vacantes laborales distribuidas entre redes sociales, grupos informales y portales externos no verificados. En la situación actual, no existe un canal institucional unificado que centralice ofertas validadas por la universidad junto con vacantes externas filtradas por perfil académico, lo que incrementa el tiempo de búsqueda de empleo, expone a los egresados a publicaciones desactualizadas y dificulta a las autoridades medir indicadores confiables de inserción laboral.
 
-\subsection{Objetivos específicos e indicadores de verificación}
-% Incluir entre 3 y 5 objetivos específicos medibles con su indicador.
-
-% ============================================================
-% 5. TRABAJOS RELACIONADOS
-% ============================================================
-\section{Trabajos relacionados}
-% Analizar al menos 3 sistemas o estudios publicados respaldados en referencias.bib.
-
-% ============================================================
-% 6. REQUISITOS DEL SISTEMA
-% ============================================================
-\section{Requisitos del sistema}
-\subsection{Requisitos funcionales (Historias de usuario)}
-% Redactar al menos 10 historias de usuario con criterios de aceptación trazables a la Evidencia 1.
-
-\subsection{Requisitos no funcionales (ISO/IEC 25010)}
-% Redactar al menos 6 RNF cuantificados asociados a características de la norma ISO/IEC 25010.
-
-% ============================================================
-% 7. JUSTIFICACIÓN DE LA ARQUITECTURA DISTRIBUIDA
-% ============================================================
-\section{Justificación de la arquitectura distribuida}
-% Contrastar microservicios frente a monolito apoyado en los RNF.
-
-% ============================================================
-% 8. ARQUITECTURA BASE CON EL MODELO C4
-% ============================================================
-\section{Arquitectura base con el modelo C4}
-\subsection{Diagrama de contexto (Nivel 1)}
-% Insertar docs/figuras/c4-nivel1-contexto.png
-
-\subsection{Diagrama de contenedores (Nivel 2)}
-% Insertar docs/figuras/c4-nivel2-contenedores.png
-
-% ============================================================
-% 9. MODELO DE COMUNICACIÓN ENTRE SERVICIOS
-% ============================================================
-\section{Modelo de comunicación entre servicios}
-% Tabla de interacciones (síncrona/asíncrona, REST/gRPC/AMQP y justificación con mediciones de PE-U1).
-
-% ============================================================
-% 10. ANÁLISIS CAP Y PACELC
-% ============================================================
-\section{Análisis CAP y PACELC del proyecto}
-% Analizar datos críticos (postulaciones, estado de ofertas, perfiles, ofertas externas) y consecuencias al usuario.
-
-% ============================================================
-% 11. REGISTROS DE DECISIONES DE ARQUITECTURA (ADR)
-% ============================================================
-\section{Registros de decisiones de arquitectura (ADR)}
-Los registros completos se versionan en formato Markdown dentro de \texttt{/docs/adr/}. A continuación se resumen las dos decisiones fundamentales aprobadas por el equipo:
-
+Los principales interesados (\textit{stakeholders}) identificados son:
 \begin{itemize}
-    \item \textbf{ADR-001 (Estilo de arquitectura — \texttt{docs/adr/ADR-001-estilo-arquitectura.md}):} Se adopta una arquitectura de microservicios desacoplados orientados a dominio detrás de un \textit{API Gateway} para aislar la carga intensiva de ingesta externa (\textit{web scraping}) de las transacciones interactivas de perfiles, validación de vacantes y postulaciones.
-    \item \textbf{ADR-002 (Mecanismo de comunicación — \texttt{docs/adr/ADR-002-mecanismo-comunicacion.md}):} Se adopta gRPC sobre HTTP/2 con Protocol Buffers como mecanismo síncrono interno principal por su tipado estricto y menor latencia de serialización, reservando REST/JSON para el borde público y mensajería asíncrona (AMQP) para alertas e importación de ofertas externas.
+    \item \textbf{Graduados UTEQ:} requieren acceso confiable a vacantes vigentes acordes a su carrera, postulación ágil y trazabilidad del estado de sus solicitudes.
+    \item \textbf{Empresas colaboradoras:} buscan publicar vacantes verificadas y recibir postulaciones filtradas de talento profesional local.
+    \item \textbf{Coordinación / Administración UTEQ:} necesita validar la legitimidad de las ofertas publicadas, auditar movimientos críticos y generar reportes de empleabilidad por carrera.
 \end{itemize}
 
-% ============================================================
-% 12. ANÁLISIS DE RIESGOS
-% ============================================================
-\section{Análisis de riesgos}
-% Incluir al menos 5 riesgos técnicos (probabilidad, impacto, mitigación), con al menos 3 derivados de FORM-AC-01.
+Para responder a esta necesidad, se propone la plataforma \textbf{Bolsa de Empleos para Graduados UTEQ} bajo una arquitectura distribuida de microservicios que desacopla el flujo transaccional de postulaciones de los procesos de ingesta externa (\textit{web scraping}) y envío de alertas. En el ámbito del reclutamiento digital, la literatura reciente evidencia los retos de centralización, filtrado y recomendación sobre vacantes heterogéneas \cite{freire2021,mashayekhi2024}. Asimismo, la adopción de microservicios frente a enfoques monolíticos facilita el escalamiento independiente y la gestión descentralizada de datos por dominio, a cambio de mayores exigencias en monitoreo, pruebas y coordinación entre servicios que deben contemplarse desde el diseño inicial \cite{blinowski2022,laigner2021,waseem2021}.
 
-% ============================================================
-% 13. PLAN DEL PROYECTO
-% ============================================================
+\section{Objetivos}
+% Pendiente: incorporar objetivo general y 3 a 5 objetivos especificos con indicador de verificacion.
+
+\section{Trabajos relacionados}
+% Pendiente: contrastar al menos 3 sistemas o estudios publicados.
+
+\section{Especificación de requisitos}
+
+\subsection{Requisitos funcionales (Historias de usuario)}
+
+A continuación se definen los 10 requisitos funcionales prioritarios en formato de historia de usuario con su respectivo criterio de aceptación:
+
+\begin{enumerate}
+    \item \textbf{RF-01 (Registro y perfil de graduado):} Como graduado UTEQ, quiero registrarme y mantener actualizado mi perfil académico y hoja de vida para postular a vacantes acordes a mi formación. \textit{Criterio de aceptación:} el sistema valida la cédula y correo institucional, persiste el perfil y permite adjuntar la hoja de vida en formato PDF $\le 5\text{ MB}$.
+    \item \textbf{RF-02 (Verificación de elegibilidad):} Como servicio de postulaciones, quiero consultar en tiempo real si un graduado está habilitado en el padrón antes de registrar su solicitud para evitar postulaciones inválidas. \textit{Criterio de aceptación:} la invocación síncrona gRPC devuelve el estado de elegibilidad, carrera y motivo en una sola respuesta estructurada.
+    \item \textbf{RF-03 (Búsqueda y filtrado de vacantes):} Como graduado, quiero buscar ofertas filtrando por carrera, modalidad, ubicación y origen (interna o externa) para encontrar oportunidades relevantes con rapidez. \textit{Criterio de aceptación:} el catálogo devuelve únicamente vacantes aprobadas y vigentes que coinciden con todos los filtros aplicados.
+    \item \textbf{RF-04 (Gestión de favoritos):} Como graduado, quiero guardar vacantes en una lista de favoritos para revisarlas y postular posteriormente. \textit{Criterio de aceptación:} el graduado puede añadir o retirar una vacante de su lista y visualizarla intacta en sesiones posteriores.
+    \item \textbf{RF-05 (Postulación a vacantes internas):} Como graduado habilitado, quiero postular a una vacante verificada con un solo clic para participar en el proceso de selección. \textit{Criterio de aceptación:} el sistema impide postulaciones duplicadas del mismo graduado a la misma oferta y genera un identificador único de postulación.
+    \item \textbf{RF-06 (Seguimiento de postulaciones):} Como graduado, quiero consultar el historial y estado actual de mis postulaciones (enviada, en revisión, seleccionada o cerrada) para conocer mi avance. \textit{Criterio de aceptación:} cualquier cambio de estado realizado por la empresa se refleja en el panel del graduado con fecha y hora.
+    \item \textbf{RF-07 (Publicación de vacantes por empresas):} Como empresa colaboradora, quiero registrar mi organización y publicar ofertas laborales con requisitos y fecha límite para captar graduados UTEQ. \textit{Criterio de aceptación:} toda oferta nueva queda en estado ``Pendiente de validación'' y no se publica hasta recibir aprobación administrativa.
+    \item \textbf{RF-08 (Revisión de postulantes):} Como empresa colaboradora, quiero visualizar los perfiles y hojas de vida de los graduados postulados a mis vacantes y actualizar su estado de selección. \textit{Criterio de aceptación:} la empresa solo accede a los postulantes de sus propias ofertas y cada actualización de estado queda registrada.
+    \item \textbf{RF-09 (Validación administrativa y auditoría):} Como administrador UTEQ, quiero aprobar o rechazar ofertas pendientes y emitir reportes de empleabilidad por carrera para garantizar la calidad de la bolsa. \textit{Criterio de aceptación:} rechazar una vacante exige registrar un motivo obligatorio y toda acción administrativa guarda usuario, operación y marca de tiempo.
+    \item \textbf{RF-10 (Ingesta externa y alertas asíncronas):} Como sistema distribuido, quiero importar periódicamente vacantes desde portales externos (\textit{web scraping}), etiquetarlas como externas y notificar por correo a graduados compatibles sin bloquear la plataforma. \textit{Criterio de aceptación:} cada oferta externa muestra su fuente y enlace original, y el envío de correos se procesa de forma asíncrona sin afectar la respuesta al usuario.
+\end{enumerate}
+
+\subsection{Requisitos no funcionales (ISO/IEC 25010)}
+
+La Tabla~\ref{tab:rnf} especifica los requisitos no funcionales cuantificados y asociados a las características de calidad de la norma ISO/IEC 25010.
+
+\begin{table}[htbp]
+\centering
+\caption{Requisitos no funcionales cuantificados bajo la norma ISO/IEC 25010.}
+\label{tab:rnf}
+\begin{tabularx}{\textwidth}{l l X l}
+\toprule
+\textbf{Cód.} & \textbf{ISO/IEC 25010} & \textbf{Requisito cuantificado} & \textbf{Verificación} \\
+\midrule
+RNF-01 & Eficiencia de desempeño (Comportamiento temporal) & El 95\,\% ($p95$) de las consultas de catálogo y validaciones gRPC de elegibilidad responde en $\le 300\text{ ms}$ con 50 usuarios simultáneos. & Pruebas de carga \\
+RNF-02 & Fiabilidad (Disponibilidad) & Disponibilidad operativa $\ge 99{,}5\,\%$ mensual en servicios núcleo; la caída del módulo de \textit{scraping} o correo no interrumpe postulaciones. & Pruebas de fallos \\
+RNF-03 & Eficiencia de desempeño (Capacidad) & El servicio de búsqueda y el recolector externo escalan horizontalmente de 1 a 3 réplicas en $< 60\text{ s}$ sin afectar al servicio de perfiles. & Contenedores Docker \\
+RNF-04 & Seguridad (Confidencialidad e integridad) & 100\,\% del tráfico externo cifrado con TLS 1.3, contraseñas protegidas con \textit{hash} robusto (Argon2/bcrypt) y control de acceso RBAC. & Auditoría técnica \\
+RNF-05 & Fiabilidad (Tolerancia a fallos) & 0 postulaciones duplicadas ante reintentos de red (operación idempotente) y tiempo de recuperación (RTO) $\le 5\text{ min}$ tras reinicio de contenedor. & Pruebas de integración \\
+RNF-06 & Mantenibilidad (Analizabilidad) & 100\,\% de las validaciones administrativas y errores gRPC registran marca de tiempo UTC, actor e ID de correlación en $< 1\text{ s}$. & Revisión de \textit{logs} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Justificación de la arquitectura distribuida}
+% Pendiente: contrastar microservicios vs monolito apoyado en los RNF.
+
+\section{Arquitectura base (Modelo C4)}
+% Pendiente: integrar diagramas C4 Nivel 1 (Contexto) y Nivel 2 (Contenedores).
+
+\section{Modelo de comunicación entre servicios}
+% Pendiente: tabla de interacciones (sincronica/asincronica, REST/gRPC/AMQP) enlazada con PE-U1.
+
+\section{Análisis CAP y PACELC}
+% Pendiente: analisis por dato critico (postulaciones, perfiles, ofertas externas).
+
+\section{Registros de decisiones de arquitectura (ADR)}
+% Pendiente: resumen de ADR-001 y ADR-002 ubicados en docs/adr/.
+
+\section{Análisis de riesgos técnicos}
+% Pendiente: minimo 5 riesgos (al menos 3 derivados del incidente de FORM-AC-01).
+
 \section{Plan del proyecto}
-\subsection{Roles y responsabilidades}
-\begin{table}[h!]
-\centering
-\caption{Distribución de roles y responsabilidades del equipo.}
-\begin{tabular}{p{4.5cm}p{3.5cm}p{6.5cm}}
-\toprule
-\textbf{Integrante} & \textbf{Rol} & \textbf{Responsabilidades principales} \\
-\midrule
-Luis Jeremy Jaramillo Acosta & Arquitecto & Diseño de arquitectura C4, ADR-001, análisis CAP/PACELC y orquestación de contenedores. \\
-Kenny Isaías España Vera & Líder de Desarrollo & Definición de comunicación (ADR-002), desarrollo de microservicios, API y contratos gRPC. \\
-Heiner Ariel Zambrano Ronquillo & Responsable de Calidad & Especificación de RNF (ISO/IEC 25010), análisis de riesgos, pruebas de integración y verificación de evidencias. \\
-Luis Alberto Paca Pilataza & Responsable de Documentación & Gestión de \texttt{README.md}, \texttt{BITACORA.md}, compilación LaTeX, levantamiento de requisitos y trazabilidad bibliográfica. \\
-\bottomrule
-\end{tabular}
-\end{table}
 
-\subsection{Tablero en GitHub Projects y cronograma de entregas}
-El seguimiento de tareas (\textit{issues}) de las entregas E1 y E2 se gestiona en el tablero público \textit{TA-PFC-E1 - Bolsa de Empleos UTEQ} vinculado al repositorio. La Tabla~\ref{tab:cronograma} presenta el cronograma de las cuatro entregas alineado con el calendario de la asignatura.
+\subsection{Roles, responsabilidades y gestión en GitHub Projects}
 
-\begin{table}[h!]
+El seguimiento de tareas se realiza mediante el tablero público \texttt{TA-PFC-E1 - Bolsa de Empleos UTEQ} en GitHub Projects, donde se gestionan los \textit{issues} de E1 (en ejecución y cierre) y la planificación inicial de E2 asignados por rol:
+
+\begin{itemize}
+    \item \textbf{Arquitecto (Luis Jeremy Jaramillo Acosta):} diseño de la arquitectura C4, redacción de ADR-001, gobierno del repositorio y orquestación de contenedores en E2.
+    \item \textbf{Líder de Desarrollo (Kenny Isaías España Vera):} definición de comunicación (ADR-002), desarrollo de microservicios y construcción del \textit{API Gateway} en E2.
+    \item \textbf{Responsable de Calidad (Heiner Ariel Zambrano Ronquillo):} implementación de servicios base, ejecución de pruebas de comunicación, evidencias técnicas y verificación de requisitos de calidad.
+    \item \textbf{Responsable de Documentación (Luis Alberto Paca Pilataza):} contrato de interfaz inicial, consolidación del informe LaTeX en formato IEEE, gestión de \texttt{BITACORA.md} y documentación técnica.
+\end{itemize}
+
+\subsection{Cronograma de entregas del PFC}
+
+La Tabla~\ref{tab:cronograma} presenta la planificación de las cuatro entregas alineada con el calendario oficial de la asignatura.
+
+\begin{table}[htbp]
 \centering
-\caption{Cronograma oficial de entregas del Proyecto Fin de Curso.}
+\caption{Cronograma oficial de entregas del Proyecto Fin de Curso (PFC).}
 \label{tab:cronograma}
-\begin{tabular}{llccp{6.5cm}}
+\begin{tabularx}{\textwidth}{l c l X}
 \toprule
-\textbf{Entrega} & \textbf{Código} & \textbf{Sem.} & \textbf{Fechas} & \textbf{Alcance técnico principal} \\
+\textbf{Entrega} & \textbf{Sem.} & \textbf{Fechas} & \textbf{Alcance técnico principal} \\
 \midrule
-E1 & \texttt{TA-PFC-E1} & 5 & 23--29 nov 2026 & Definición, requisitos, C4, ADR, CAP/PACELC y esqueleto gRPC. \\
-E2 & \texttt{TA-PFC-E2} & 9 & 21--27 dic 2026 & Microservicios funcionales, API Gateway y contenedores Docker. \\
-E3 & \texttt{TA-PFC-E3} & 13 & 18--24 ene 2027 & Base de datos distribuida, replicación y procesamiento externo. \\
-E4 & \texttt{TA-PFC-E4} & 17 & 15--21 feb 2027 & Sistema final en capas, calidad ISO/IEC 25010, pruebas y defensa. \\
+TA-PFC-E1 & 5 & 23 -- 29 nov 2026 & Definición del problema, 10 RF (HU), 6 RNF (ISO/IEC 25010), arquitectura C4 (Niveles 1 y 2), ADR-001/002, análisis CAP/PACELC y esqueleto gRPC. \\
+TA-PFC-E2 & 9 & 21 -- 27 dic 2026 & Microservicios funcionales de negocio, \textit{API Gateway} REST, comunicación interna gRPC/AMQP y contenerización con Docker. \\
+TA-PFC-E3 & 13 & 18 -- 24 ene 2027 & Base de datos distribuida (fragmentación y replicación), control de concurrencia y procesamiento de ofertas externas. \\
+TA-PFC-E4 & 17 & 15 -- 21 feb 2027 & Sistema final en capas bajo ISO/IEC 25010, suite de pruebas, observabilidad, despliegue integrado y defensa final. \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
-% ============================================================
-% 14. ESQUELETO FUNCIONAL
-% ============================================================
-\section{Esqueleto funcional en el repositorio}
-El esqueleto técnico implementa dos servicios mínimos en Python bajo \texttt{/src/} que se comunican mediante gRPC (\texttt{proto/bolsa\_uteq.proto}): \texttt{servicio\_perfiles} (servidor en puerto 50051) y \texttt{servicio\_postulaciones} (cliente que invoca \texttt{VerificarElegibilidad}). Las instrucciones de ejecución se detallan en \texttt{README.md}.
+\section{Esqueleto funcional y evidencia de ejecución}
+% Pendiente: documentar contrato proto/bolsa_uteq.proto, servicio_perfiles, servicio_postulaciones y capturas.
 
-% ============================================================
-% 15. TABLA DE APORTES
-% ============================================================
-\section{Tabla de aportes}
-% Completar en Sesión 4 con enlaces exactos a todos los commits e issues de cada integrante.
+\section{Tabla de aportes individuales}
+% Pendiente: consolidar enlaces a commits e issues cerrados por integrante antes de la entrega final.
 
-% ============================================================
-% 16. DECLARACIÓN DE USO DE INTELIGENCIA ARTIFICIAL
-% ============================================================
 \section{Declaración de uso de inteligencia artificial}
-% Declarar herramienta, versión, propósito específico y método de verificación aplicado.
+% Pendiente: declarar herramienta, version, alcance de uso y verificacion realizada por el equipo.
 
-% ============================================================
-% 17. REFERENCIAS
-% ============================================================
 \printbibliography[title={Referencias}]
 
 \end{document}
