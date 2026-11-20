@@ -64,7 +64,7 @@ class TestContratosGrpc(unittest.TestCase):
 
     def test_serializacion_deserializacion_consulta_graduado_request(self):
         original = bolsa_uteq_pb2.ConsultaGraduadoRequest(
-            cedula_o_id="0000000001",
+            cedula_o_id="GRAD-TEST-001",
             codigo_oferta="OF-2026-001",
         )
         payload = original.SerializeToString()

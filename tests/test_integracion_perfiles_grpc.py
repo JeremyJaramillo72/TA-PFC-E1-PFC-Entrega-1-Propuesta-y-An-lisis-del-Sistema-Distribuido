@@ -76,7 +76,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             cls._stub.VerificarElegibilidad(
                 bolsa_uteq_pb2.ConsultaGraduadoRequest(
-                    cedula_o_id="0000000001",
+                    cedula_o_id="GRAD-TEST-001",
                     codigo_oferta="WARMUP",
                 ),
                 timeout=5,
@@ -90,7 +90,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
             cls._server.stop(grace=1).wait()
 
     def test_consulta_graduado_habilitado(self):
-        id_prueba = "0000000001"
+        id_prueba = "GRAD-TEST-001"
         esperado = GRADUADOS_UTEQ[id_prueba]
 
         solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
@@ -110,7 +110,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
 
     def test_consulta_graduado_inexistente(self):
         solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
-            cedula_o_id="9999999999",
+            cedula_o_id="GRAD-TEST-999",
             codigo_oferta="OF-2026-001",
         )
         with contextlib.redirect_stdout(io.StringIO()):
@@ -124,28 +124,33 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
             "Graduado no encontrado en el padrón de la UTEQ.",
         )
 
-    def test_entrada_vacia_respuesta_controlada(self):
-        for cedula_borde, oferta_borde in (("", ""), ("   ", "OF-2026-001")):
+    def test_entrada_invalida_rechazada_con_invalid_argument(self):
+        casos_borde = (
+            ("", ""),
+            ("   ", "OF-2026-001"),
+            ("ID-INVALIDO", "OF-2026-001"),
+            ("1234567890", "OF-2026-001"),
+            ("grad-test-001", "OF-2026-001"),
+        )
+        for cedula_borde, oferta_borde in casos_borde:
             with self.subTest(cedula_o_id=cedula_borde, codigo_oferta=oferta_borde):
                 solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
                     cedula_o_id=cedula_borde,
                     codigo_oferta=oferta_borde,
                 )
                 with contextlib.redirect_stdout(io.StringIO()):
-                    respuesta = self._stub.VerificarElegibilidad(solicitud, timeout=5)
+                    with self.assertRaises(grpc.RpcError) as contexto:
+                        self._stub.VerificarElegibilidad(solicitud, timeout=5)
 
-                self.assertFalse(respuesta.elegible)
-                self.assertEqual(respuesta.nombre_completo, "No registrado")
-                self.assertEqual(respuesta.carrera, "N/A")
                 self.assertEqual(
-                    respuesta.motivo,
-                    "Graduado no encontrado en el padrón de la UTEQ.",
+                    contexto.exception.code(), grpc.StatusCode.INVALID_ARGUMENT
                 )
+                self.assertTrue(contexto.exception.details())
 
     def test_latencia_p95_bajo_umbral(self):
         total_llamadas = 30
         solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
-            cedula_o_id="0000000002",
+            cedula_o_id="GRAD-TEST-002",
             codigo_oferta="OF-2026-001",
         )
         latencias_ms = []
@@ -262,7 +267,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
             puerto_cerrado = sock.getsockname()[1]
 
         solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
-            cedula_o_id="0000000002",
+            cedula_o_id="GRAD-TEST-002",
             codigo_oferta="OF-2026-001",
         )
         with grpc.insecure_channel(f"127.0.0.1:{puerto_cerrado}") as canal_caido:
@@ -274,7 +279,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
 
             salida_cliente = io.StringIO()
             with contextlib.redirect_stdout(salida_cliente):
-                verificar_elegibilidad(stub_caido, "0000000002", "OF-2026-001")
+                verificar_elegibilidad(stub_caido, "GRAD-TEST-002", "OF-2026-001")
 
             texto_cliente = salida_cliente.getvalue()
             self.assertIn("[servicio-postulaciones] Error gRPC: UNAVAILABLE", texto_cliente)
@@ -298,7 +303,7 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
                 grpc.channel_ready_future(canal_lento).result(timeout=5)
                 stub_lento = bolsa_uteq_pb2_grpc.PerfilServiceStub(canal_lento)
                 solicitud = bolsa_uteq_pb2.ConsultaGraduadoRequest(
-                    cedula_o_id="0000000001",
+                    cedula_o_id="GRAD-TEST-001",
                     codigo_oferta="OF-2026-001",
                 )
                 with self.assertRaises(grpc.RpcError) as contexto:

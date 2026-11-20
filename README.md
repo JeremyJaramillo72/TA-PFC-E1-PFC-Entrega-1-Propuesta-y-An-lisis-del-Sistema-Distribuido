@@ -37,26 +37,59 @@ El esqueleto está formado por dos procesos que se comunican mediante gRPC segú
 | Proceso | Archivo | Rol gRPC |
 | :--- | :--- | :--- |
 | `servicio-perfiles` | `src/servicio_perfiles/servidor_perfiles.py` | Servidor de `PerfilService` en el puerto `50051` |
-| `servicio-postulaciones` | `src/servicio_postulaciones/cliente_postulaciones.py` | Cliente que invoca `VerificarElegibilidad` |
+| `servicio-postulaciones` | `src/servicio_postulaciones/cliente_postulaciones.py` | Cliente que invoca `VerificarElegibilidad` y registra postulaciones |
 
-1. Instalar las dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. (Solo si se modifica el `.proto`) regenerar los stubs en `src/generated/`:
-   ```bash
-   python scripts/generar_stubs.py
-   ```
-3. Iniciar el servidor de perfiles en una terminal:
-   ```bash
-   python src/servicio_perfiles/servidor_perfiles.py
-   ```
-4. Ejecutar el cliente de postulaciones en otra terminal. Consulta un graduado habilitado y una cédula no registrada:
-   ```bash
-   python src/servicio_postulaciones/cliente_postulaciones.py
-   ```
-   Para apuntar a otro equipo de la red: `PERFILES_ADDR=<ip>:50051` (en PowerShell: `$env:PERFILES_ADDR="<ip>:50051"`).
-5. Ejecutar las pruebas de contrato e integración:
-   ```bash
-   python -m unittest discover -s tests -v
-   ```
+> **Datos de prueba:** el padrón en memoria usa solo identificadores ficticios (`GRAD-TEST-001`, `GRAD-TEST-002`, `GRAD-TEST-003`). El servidor rechaza con `INVALID_ARGUMENT` cualquier ID vacío o que no siga el formato `GRAD-XXXX-NNN`; nunca se usan números de cédula reales.
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido.git
+cd TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido
+```
+
+### 2. Instalar dependencias
+Requiere Python 3.10 o superior.
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Compilar `proto/bolsa_uteq.proto` hacia `src/generated/`
+Los stubs ya están versionados en `src/generated/`; este paso es obligatorio solo si se modifica el `.proto`.
+```bash
+python scripts/generar_stubs.py
+```
+Comando equivalente sin el script:
+```bash
+python -m grpc_tools.protoc -I proto --python_out=src/generated --grpc_python_out=src/generated proto/bolsa_uteq.proto
+```
+
+### 4. Terminal 1: iniciar `servicio-perfiles`
+```bash
+python src/servicio_perfiles/servidor_perfiles.py
+```
+Salida esperada: `[servicio-perfiles] Escuchando gRPC en puerto 50051 | Equipo=... | PID=...`. Dejar esta terminal abierta.
+
+### 5. Terminal 2: ejecutar `servicio-postulaciones`
+```bash
+python src/servicio_postulaciones/cliente_postulaciones.py
+```
+El cliente ejecuta estos casos y muestra un resumen al final:
+
+| Caso | ID enviado | Resultado esperado |
+| :--- | :--- | :--- |
+| (a) Postulación válida | `GRAD-TEST-002` → `OF-2026-001` | `ACEPTADA` |
+| (b) Reintento duplicado (RNF-05) | `GRAD-TEST-002` → `OF-2026-001` | `DUPLICADA` (no se registra dos veces) |
+| (c) ID mal formado | `ID-INVALIDO` | `RECHAZADA` por `INVALID_ARGUMENT` |
+| (c) ID vacío | `""` | `RECHAZADA` por `INVALID_ARGUMENT` |
+| (d) ID válido no registrado | `GRAD-TEST-999` | `RECHAZADA` (`NO ELEGIBLE`) |
+
+Cada llamada usa un *deadline* de 2 s. Los errores `UNAVAILABLE` (servidor apagado), `DEADLINE_EXCEEDED` (servidor lento) e `INVALID_ARGUMENT` se informan por consola sin detener el script.
+
+Para apuntar a `servicio-perfiles` en otro equipo de la red, definir `PERFILES_ADDR` antes de ejecutar el cliente:
+- Bash: `export PERFILES_ADDR=<ip>:50051`
+- PowerShell: `$env:PERFILES_ADDR="<ip>:50051"`
+
+### 6. Pruebas de contrato e integración
+```bash
+python -m unittest discover -s tests -v
+```
