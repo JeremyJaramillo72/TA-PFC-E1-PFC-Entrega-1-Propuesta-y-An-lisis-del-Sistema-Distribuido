@@ -30,6 +30,7 @@ Plataforma distribuida basada en microservicios para gestionar la inserción lab
 ├── requirements.txt        # Dependencias de Python
 ├── BITACORA.md             # Registro cronológico de sesiones del equipo
 └── README.md               # Guía general y de compilación
+```
 
 ## Ejecución del esqueleto gRPC (E1)
 El esqueleto está formado por dos procesos que se comunican mediante gRPC según el contrato `proto/bolsa_uteq.proto` (ver `docs/adr/ADR-002-mecanismo-comunicacion.md`):
@@ -93,3 +94,18 @@ Para apuntar a `servicio-perfiles` en otro equipo de la red, definir `PERFILES_A
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+## Compilación del informe técnico (LaTeX)
+- **Compilador y procesador bibliográfico:** `pdflatex` (TeX Live 2023+ o MiKTeX) y `biber` (para `biblatex` con estilo `ieee`).
+- **Archivo principal:** `docs/main.tex` (usa `docs/referencias.bib`, las figuras en `docs/figuras/` y las capturas en `evidencias/`).
+- **Dependencias de paquetes LaTeX:** `inputenc`, `fontenc`, `babel` (`spanish`, `es-tabla`), `geometry`, `amsmath`, `graphicx`, `booktabs`, `tabularx`, `xurl`, `hyperref`, `biblatex` y `biber`.
+
+Orden exacto de comandos desde la raíz del repositorio:
+```bash
+cd docs
+pdflatex main.tex
+biber main
+pdflatex main.tex
+pdflatex main.tex
+```
+Al finalizar se genera `docs/main.pdf` con tabla de contenido, referencias cruzadas y bibliografía IEEE resueltas.

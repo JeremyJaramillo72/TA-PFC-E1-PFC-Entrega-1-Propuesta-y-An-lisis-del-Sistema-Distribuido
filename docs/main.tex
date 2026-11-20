@@ -74,7 +74,34 @@ Para responder a esta necesidad, se propone la plataforma \textbf{Bolsa de Emple
 % Pendiente: incorporar objetivo general y 3 a 5 objetivos especificos con indicador de verificacion.
 
 \section{Trabajos relacionados}
-% Pendiente: contrastar al menos 3 sistemas o estudios publicados.
+
+El diseño de la \textbf{Bolsa de Empleos para Graduados UTEQ} toma como referencia cuatro trabajos científicos recientes en el dominio de sistemas de reclutamiento electrónico (\textit{e-recruitment}) y recomendación de vacantes, contrastando sus aportes técnicos con las necesidades de una plataforma universitaria distribuida:
+
+\begin{itemize}
+    \item \textbf{Skills2Job \cite{giabelli2021}:} propone un sistema de recomendación laboral que representa vacantes y competencias profesionales mediante \textit{embeddings} almacenados en bases de datos de grafos para mejorar la correspondencia semántica entre candidatos y puestos. Del estudio se adopta la estructuración normalizada del perfil académico por carrera y competencias para el filtrado de vacantes heterogéneas (RF-01, RF-03). Sin embargo, a diferencia de su motor centralizado basado en grafos, la Bolsa UTEQ prioriza una arquitectura de microservicios con persistencia relacional aislada por dominio (\texttt{PostgreSQL}), validación administrativa previa de ofertas (RF-07, RF-09) y verificación síncrona de elegibilidad contra el padrón institucional (RF-02).
+    \item \textbf{Recomendación basada en organizaciones virtuales \cite{gonzalezbriones2024}:} presenta una arquitectura distribuida apoyada en organizaciones virtuales y agentes especializados que desacoplan la recolección de ofertas externas, el perfilado de usuarios y la emisión de recomendaciones. De esta propuesta se retoma la separación de responsabilidades entre la ingesta externa y la gestión de usuarios/alertas (RF-10). Como diferencia arquitectónica, nuestro sistema reemplaza la plataforma multiagente por microservicios contenerizados comunicados por \texttt{gRPC/Protobuf} para las rutas síncronas críticas ($p95 \le 300\text{ ms}$) y \texttt{RabbitMQ/AMQP} para eventos asíncronos, reduciendo la complejidad de despliegue y monitoreo en las entregas E2--E4.
+    \item \textbf{Revisión sistemática de sistemas de recomendación en \textit{e-recruitment} \cite{freire2021}:} analiza técnicas de filtrado basado en contenido, colaborativo e híbrido en portales de empleo, identificando problemas recurrentes de ofertas obsoletas, heterogeneidad de datos y arranque en frío (\textit{cold-start}). El proyecto adopta el filtrado estructurado por atributos explícitos del graduado (carrera, modalidad, ubicación y origen en RF-03) junto con la verificación periódica de vigencia de vacantes externas (RF-10), diferenciándose al incorporar aprobación administrativa institucional obligatoria y seguimiento auditable de postulaciones (RF-06, RF-09).
+    \item \textbf{Estudio basado en retos en recomendación de reclutamiento digital \cite{mashayekhi2024}:} examina desafíos vigentes de escalabilidad, integración multi-fuente, privacidad de candidatos y calidad de los datos en entornos de empleo digital. De este trabajo se incorporan el etiquetado transparente del origen externo de las vacantes (RF-10) y los requisitos estrictos de confidencialidad y control de acceso basado en roles (\texttt{TLS 1.3}, RBAC y resguardo de datos personales en RNF-04). La propuesta se distingue por atender el dominio cerrado y verificable de egresados UTEQ con garantías explícitas de idempotencia ante reintentos de red (RNF-05).
+\end{itemize}
+
+La Tabla~\ref{tab:trabajos-relacionados} sintetiza la comparación entre estos antecedentes y la plataforma propuesta.
+
+\begin{table}[htbp]
+\centering
+\caption{Síntesis comparativa de trabajos relacionados frente a la Bolsa de Empleos UTEQ.}
+\label{tab:trabajos-relacionados}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}p{3.8cm} X}
+\toprule
+\textbf{Estudio} & \textbf{Enfoque principal} & \textbf{Aporte adoptado} & \textbf{Diferencia en Bolsa UTEQ} \\
+\midrule
+Giabelli et al. \cite{giabelli2021} & Recomendación con \textit{embeddings} sobre grafos (Skills2Job). & Estructuración por perfil y competencias para filtrar ofertas. & Microservicios con PostgreSQL por dominio, validación UTEQ y verificación síncrona gRPC. \\
+González-Briones et al. \cite{gonzalezbriones2024} & Sistema distribuido con organizaciones virtuales y agentes. & Desacoplamiento entre recolección externa, perfiles y alertas. & Contenedores con \texttt{gRPC} y \texttt{AMQP} (RabbitMQ) en lugar de infraestructura multiagente. \\
+Freire y de Castro \cite{freire2021} & Revisión sistemática de filtrado en \textit{e-recruitment}. & Filtrado explícito (RF-03) y control de vigencia de vacantes externas. & Incorpora aprobación administrativa previa (RF-07/09) y trazabilidad de postulaciones. \\
+Mashayekhi et al. \cite{mashayekhi2024} & Retos de escalabilidad, multi-fuente y privacidad. & Etiquetado de origen externo y control de seguridad RBAC/TLS (RNF-04). & Integración con padrón institucional e idempotencia estricta de postulaciones (RNF-05). \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Especificación de requisitos}
 
@@ -118,11 +145,39 @@ RNF-06 & Mantenibilidad (Analizabilidad) & 100\,\% de las validaciones administr
 \end{table}
 
 \section{Justificación de la arquitectura distribuida}
-% Pendiente: contrastar microservicios vs monolito apoyado en los RNF.
+
+La plataforma debe atender de forma simultánea dos perfiles de carga incompatibles en un mismo ciclo operativo: rutas transaccionales interactivas de baja latencia (validación de elegibilidad, registro idempotente de postulaciones y aprobación administrativa) y procesos intensivos en entrada/salida sujetos a latencias variables o bloqueos de terceros (\textit{web scraping} de portales externos y despacho masivo de correos SMTP). Adoptar una \textbf{arquitectura monolítica} desplegada como una sola unidad con base de datos única resulta insuficiente frente a los requisitos no funcionales cuantificados en la Tabla~\ref{tab:rnf}:
+
+\begin{itemize}
+    \item \textbf{Aislamiento de fallos y disponibilidad (RNF-02):} en un monolito, una caída del servidor SMTP o la saturación de hilos provocada por un portal externo lento durante el \textit{scraping} degradan el mismo proceso que registra postulaciones. Separar \texttt{Servicio de Ofertas y Scraping} y \texttt{Servicio de Notificaciones} mediante mensajería asíncrona (\texttt{RabbitMQ/AMQP}) contiene fallos parciales y protege la disponibilidad operativa $\ge 99{,}5$\,\% de los servicios núcleo.
+    \item \textbf{Escalabilidad selectiva y desempeño temporal (RNF-01 y RNF-03):} durante convocatorias de graduados, las búsquedas de catálogo y la ingesta externa demandan más recursos que la administración de perfiles. Mientras un monolito obliga a replicar toda la aplicación con mayor consumo de memoria y tiempo de arranque, los microservicios contenerizados permiten escalar horizontalmente de 1 a 3 réplicas en $< 60\text{ s}$ únicamente los servicios bajo carga y sostener $p95 \le 300\text{ ms}$ en validaciones internas vía \texttt{gRPC}, en concordancia con evaluaciones empíricas de rendimiento entre arquitecturas monolíticas y de microservicios \cite{blinowski2022}.
+    \item \textbf{Datos descentralizados y consistencia (RNF-05 y CAP/PACELC):} un esquema relacional monolítico acopla todos los módulos bajo una misma política transaccional. En cambio, el patrón \textit{database per service} con bases independientes (\texttt{BD Perfiles}, \texttt{BD Postulaciones} y \texttt{BD Ofertas}) permite aplicar consistencia fuerte e idempotencia estricta (\texttt{CP / PC-EC}) en postulaciones y elegibilidad, manteniendo alta disponibilidad y baja latencia (\texttt{AP / PA-EL}) en el catálogo de vacantes y alertas \cite{laigner2021}.
+    \item \textbf{Seguridad perimetral, mantenibilidad y compromisos operativos (RNF-04 y RNF-06):} el \textit{API Gateway} concentra el cifrado \texttt{TLS 1.3}, el control RBAC y la trazabilidad de solicitudes, habilitando despliegues independientes por módulo entre E2 y E4. No obstante, esta decisión introduce costos conocidos —latencia de red interna, versionado estricto de contratos \texttt{.proto}, pruebas de integración distribuidas y mayor exigencia de observabilidad \cite{aksakalli2021,waseem2021}— que el equipo mitiga mediante \texttt{gRPC}, contratos en \texttt{proto/} y pruebas automatizadas desde E1.
+\end{itemize}
+
+La Tabla~\ref{tab:monolito-vs-microservicios} contrasta ambas alternativas arquitectónicas frente a los requisitos críticos del proyecto.
+
+\begin{table}[htbp]
+\centering
+\caption{Contraste entre arquitectura monolítica y microservicios frente a los RNF de la Bolsa UTEQ.}
+\label{tab:monolito-vs-microservicios}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}p{5.0cm} X}
+\toprule
+\textbf{Criterio / RNF} & \textbf{Arquitectura monolítica} & \textbf{Microservicios distribuidos (ADR-001)} \\
+\midrule
+Desempeño temporal (RNF-01) & Contención compartida de CPU/hilos entre \textit{scraping} y consultas interactivas. & Rutas síncronas aisladas por \texttt{gRPC/HTTP/2} con objetivo $p95 \le 300\text{ ms}$. \\
+Disponibilidad y fallos (RNF-02) & Un error no controlado en correo o extractores afecta toda la instancia. & Aislamiento por contenedor y colas \texttt{AMQP}; fallos externos no detienen postulaciones. \\
+Escalabilidad selectiva (RNF-03) & Obliga a escalar toda la aplicación completa ante picos puntuales. & Escalado horizontal independiente (1 a 3 réplicas en $< 60\text{ s}$) por servicio. \\
+Consistencia y datos (RNF-05) & Base de datos única y esquemas acoplados entre dominios. & Bases PostgreSQL aisladas con políticas diferenciadas (\texttt{CP} en postulaciones, \texttt{AP} en catálogo). \\
+Despliegue y evolución (RNF-04/06) & Cambios en extractores obligan a redesplegar todo el sistema. & Despliegues independientes tras \textit{API Gateway} con \texttt{TLS 1.3}, RBAC y trazas por servicio. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Arquitectura base (Modelo C4)}
 
-Para comunicar la estructura del sistema distribuido en niveles progresivos de abstracción, se adopta el modelo C4 (\textit{Context, Containers, Components, Code}), en consonancia con las prácticas consolidadas de documentación de arquitecturas de software \cite{garces2021}. En esta primera entrega se consolida la vista de contexto (Nivel~1) y se deja reservada la vista de contenedores (Nivel~2).
+Para comunicar la estructura del sistema distribuido en niveles progresivos de abstracción, se adopta el modelo C4 (\textit{Context, Containers, Components, Code}), en consonancia con las prácticas consolidadas de documentación de arquitecturas de software \cite{garces2021}. En esta primera entrega se consolidan tanto la vista de contexto (Nivel~1) como la vista de contenedores (Nivel~2).
 
 \subsection{Diagrama de contexto (C4 Nivel 1)}
 
@@ -157,7 +212,32 @@ Los elementos ilustrados en la Figura~\ref{fig:c4-nivel1} se describen a continu
 \end{itemize}
 
 \subsection{Diagrama de contenedores (C4 Nivel 2)}
-% Pendiente: integrar el Diagrama C4 Nivel 2 (Contenedores) y describir cada contenedor, almacén de datos y canal de comunicación interna.
+
+La Figura~\ref{fig:c4-nivel2} descompone el límite interno de la \textbf{Bolsa de Empleos para Graduados UTEQ} en contenedores desplegables, bases de datos aisladas y canales de comunicación síncronos y asíncronos, materializando las decisiones de \texttt{ADR-001} y \texttt{ADR-002} (archivo editable versionado en \path{docs/diagramas/c4-nivel2-contenedores.drawio}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.98\textwidth]{figuras/c4-nivel2-contenedores.png}
+    \caption{Diagrama de Contenedores (C4 Nivel 2) de la Bolsa de Empleos para Graduados UTEQ.}
+    \label{fig:c4-nivel2}
+\end{figure}
+
+Los contenedores, almacenes de datos y flujos de comunicación ilustrados en la Figura~\ref{fig:c4-nivel2} mantienen coherencia directa con el modelo híbrido de la Tabla~\ref{tab:comunicacion} y la clasificación CAP/PACELC de la Tabla~\ref{tab:cap-pacelc}:
+
+\begin{itemize}
+    \item \textbf{Capa de entrada y seguridad:} la \textbf{Aplicación Web (Frontend)} (\textit{SPA Web}) atiende a graduados, empresas y administradores mediante \texttt{HTTPS / TLS} y consume el \textbf{API Gateway} (\texttt{HTTPS / JSON / TLS}), que actúa como punto único de entrada para autenticación, control de acceso RBAC (RNF-04) y enrutamiento hacia los microservicios internos mediante \texttt{gRPC / mTLS}.
+    \item \textbf{Microservicios núcleo transaccionales (\texttt{CP / PC-EC}):}
+    \begin{itemize}
+        \item \textbf{Servicio de Perfiles} (\textit{Python / gRPC}): administra perfiles académicos, hojas de vida y estatus institucional; expone la operación \texttt{VerificarElegibilidad} (RF-02), persiste en \textbf{BD Perfiles} (\texttt{PostgreSQL / TLS}) y consulta al sistema externo \textbf{Padrón / Identidad UTEQ} vía \texttt{HTTPS / REST / TLS}.
+        \item \textbf{Servicio de Postulaciones} (\textit{Python / gRPC}): registra solicitudes de empleo evitando duplicados (RF-05, RNF-05), invoca de forma síncrona a \texttt{Servicio de Perfiles} mediante \texttt{gRPC / mTLS} para validar elegibilidad en tiempo real, almacena el historial en \textbf{BD Postulaciones} (\texttt{PostgreSQL / TLS}) y publica en el bróker (\texttt{AMQP / TLS}) el evento \texttt{Postulacion\-Registrada}.
+    \end{itemize}
+    \item \textbf{Ofertas, mensajería y notificaciones (\texttt{AP / PA-EL}):}
+    \begin{itemize}
+        \item \textbf{Servicio de Ofertas y Scraping} (\textit{Microservicio / Recolector}): consolida en un contenedor desplegable la gestión de vacantes de empresas, la validación administrativa UTEQ y el recolector periódico sobre \textbf{Portales Laborales Externos} (\texttt{HTTPS / Web Scraping}), persistiendo en \textbf{BD Ofertas} (\texttt{PostgreSQL / TLS}) y publicando el evento \texttt{NuevaOferta\-Validada} (\texttt{AMQP / TLS}). En E2/E3 la lógica de recolección podrá escalarse en réplicas independientes conforme a RNF-03.
+        \item \textbf{Broker de Mensajería} (\textit{RabbitMQ / AMQP}): desacopla los eventos \texttt{Postulacion\-Registrada} y \texttt{NuevaOferta\-Validada} de los servicios transaccionales, absorbiendo picos de tráfico e indisponibilidades temporales.
+        \item \textbf{Servicio de Notificaciones} (\textit{Consumidor Asíncrono}): consume eventos del bróker (\texttt{AMQP / TLS}) y despacha alertas de empleo, avisos de estado y códigos 2FA mediante \textbf{Servicio de Correo (SMTP)} (\texttt{SMTP / TLS}) sin bloquear las peticiones del usuario (RF-10, RNF-02).
+    \end{itemize}
+\end{itemize}
 
 \section{Modelo de comunicación entre servicios}
 
@@ -347,6 +427,41 @@ La Figura~\ref{fig:ejecucion-servidor} evidencia el inicio del servidor gRPC \te
     \caption{Ejecución simultánea de \texttt{servicio\_perfiles} (terminal superior) y \texttt{servicio\_postulaciones} (terminal inferior), evidenciando la trazabilidad de solicitudes y respuestas gRPC a las 00:16:50 del 19 de noviembre de 2026.}
     \label{fig:ejecucion-conjunta}
 \end{figure}
+
+\subsection{Pruebas automatizadas de contrato, carga (RNF-01) y resiliencia}
+
+Para respaldar con mediciones verificables la comunicación gRPC y el comportamiento del esqueleto frente a \texttt{RNF-01}, \texttt{RNF-02} y \texttt{RNF-05}, se implementó una suite automatizada basada en \texttt{unittest} en \path{tests/test_contratos_grpc.py} (6 casos de contrato Protobuf y serialización) y \path{tests/test_integracion_perfiles_grpc.py} (8 casos de integración, concurrencia, carga y tolerancia a fallos), utilizando únicamente identificadores sintéticos. Tras el robustecimiento del esqueleto en el issue~\#18 (formato \texttt{GRAD-TEST-NNN}, rechazo \texttt{INVALID\_ARGUMENT} y registro idempotente en \path{cliente_postulaciones.py}), los 14 casos continúan aprobando íntegramente (\texttt{OK}).
+
+La Tabla~\ref{tab:resultados-pruebas-grpc} y la Figura~\ref{fig:pruebas-unitarias} registran los resultados reales obtenidos al ejecutar \texttt{python -m unittest discover -s tests -v} sobre el equipo \texttt{HP} (\texttt{hp\textbackslash heiner}) el 19 de noviembre de 2026 a las 19:56:55.
+
+\begin{table}[htbp]
+\centering
+\caption{Resultados medidos de la suite automatizada gRPC (\texttt{14/14 OK} en \texttt{2,890 s}).}
+\label{tab:resultados-pruebas-grpc}
+\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.3cm} X l}
+\toprule
+\textbf{Prueba ejecutada} & \textbf{Requisito} & \textbf{Resultado empírico medido} & \textbf{Estado} \\
+\midrule
+Contratos Protobuf y \textit{stub} (6 casos) & RF-02 / ADR-002 & Descriptores, tipos y serialización binaria sin pérdida en \texttt{ConsultaGraduadoRequest} y \texttt{ElegibilidadResponse}. & OK \\
+Latencia secuencial (30 llamadas) & RNF-01 & Promedio \texttt{5,838 ms}; $p95 = 6{,}749\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
+Disponibilidad concurrente (20 hilos) & RNF-02 & \texttt{20/20} exitosas (\texttt{100,00\,\%}), \texttt{0} errores RPC. & OK \\
+Carga simultánea (50 clientes virtuales) & RNF-01 & \texttt{50/50} (\texttt{100,00\,\%}); promedio \texttt{198,916 ms}, $p50 = 225{,}364\text{ ms}$, $p95 = 227{,}031\text{ ms}$, $p99 = 227{,}421\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
+Tolerancia a fallos (\texttt{UNAVAILABLE}) & RNF-02 & Puerto cerrado retorna \texttt{UNAVAILABLE}; \texttt{cliente\_postulaciones} captura el error sin detener la ejecución. & OK \\
+Control de \textit{timeout} (\texttt{DEADLINE\_EXCEEDED}) & RNF-01 / RNF-02 & Servidor con retardo de \texttt{600 ms} aborta exactamente con \texttt{DEADLINE\_EXCEEDED} al vencer \textit{deadline} de \texttt{100 ms}. & OK \\
+Validación de entradas inválidas & RF-02 / RNF-05 & Rechazo controlado sin caída del servidor (actualizado a \texttt{INVALID\_ARGUMENT} en el issue~\#18). & OK \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../evidencias/captura_pruebas_unitarias.png}
+    \caption{Ejecución de la suite automatizada \texttt{unittest} (\texttt{14/14 OK} en \texttt{2,890 s}) mostrando \texttt{whoami}, \texttt{hostname}, fecha/hora del sistema, métricas de carga \texttt{RNF-01} con 50 clientes concurrentes y pruebas de resiliencia gRPC.}
+    \label{fig:pruebas-unitarias}
+\end{figure}
+
+Cabe precisar que estas pruebas evalúan la línea base del transporte \texttt{gRPC} contra el padrón en memoria definido para E1; la suite ya soporta la variable de entorno \texttt{GRPC\_TARGET} para reutilizarse en E2 y E3 contra los contenedores Docker y las bases de datos \texttt{PostgreSQL} reales.
 
 \section{Tabla de aportes individuales}
 % Pendiente: consolidar enlaces a commits e issues cerrados por integrante antes de la entrega final.
