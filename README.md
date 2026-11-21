@@ -11,7 +11,13 @@ Plataforma distribuida basada en microservicios para gestionar la inserción lab
 | Luis Jeremy Jaramillo Acosta | Arquitecto |
 | Kenny Isaías España Vera | Líder de Desarrollo |
 | Heiner Ariel Zambrano Ronquillo | Responsable de Calidad |
-| Luis Paca | Responsable de Documentación |
+| Luis Alberto Paca Pilataza | Responsable de Documentación |
+
+## Video de presentación
+Video de presentación del proyecto (5–7 min) correspondiente a la entrega `TA-PFC-E1` de **Aplicaciones Distribuidas (`ISR-701`)**.
+
+- **Enlace:** pendiente de publicación.
+- **Fecha planificada de grabación:** por definir.
 
 ## Estructura del repositorio
 ```text
