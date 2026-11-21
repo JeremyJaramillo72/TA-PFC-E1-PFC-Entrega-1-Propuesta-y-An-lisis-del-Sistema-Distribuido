@@ -24,7 +24,7 @@ GRADUADOS_UTEQ = {
         "habilitado": True,
     },
     "GRAD-TEST-003": {
-        "nombre": "Luis Paca",
+        "nombre": "Luis Alberto Paca Pilataza",
         "carrera": "Ingeniería en Software",
         "habilitado": True,
     },
