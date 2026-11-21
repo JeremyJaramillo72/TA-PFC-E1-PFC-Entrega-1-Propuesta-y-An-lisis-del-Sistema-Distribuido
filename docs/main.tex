@@ -21,7 +21,7 @@
     \centering
     \vspace*{1cm}
     {\Large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}}\\[0.2cm]
-    {\large Facultad de Ciencias de la Computación y Diseño Digital}\\[0.2cm]
+    {\large Facultad de Ciencias de la Computación}\\[0.2cm]
     {\large Carrera de Ingeniería en Software}\\[1.2cm]
 
     \rule{\linewidth}{0.5mm}\\[0.4cm]
@@ -48,7 +48,7 @@
     \url{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}\\[1.2cm]
 
     \vfill
-    {\large Quevedo, Los Ríos, Ecuador --- Noviembre de 2026}
+    {\large Quevedo, Los Ríos, Ecuador --- 29 de noviembre de 2026}
 \end{titlepage}
 
 \tableofcontents
@@ -71,7 +71,31 @@ Los principales interesados (\textit{stakeholders}) identificados son:
 Para responder a esta necesidad, se propone la plataforma \textbf{Bolsa de Empleos para Graduados UTEQ} bajo una arquitectura distribuida de microservicios que desacopla el flujo transaccional de postulaciones de los procesos de ingesta externa (\textit{web scraping}) y envío de alertas. En el ámbito del reclutamiento digital, la literatura reciente evidencia los retos de centralización, filtrado y recomendación sobre vacantes heterogéneas \cite{freire2021,mashayekhi2024}. Asimismo, la adopción de microservicios frente a enfoques monolíticos facilita el escalamiento independiente y la gestión descentralizada de datos por dominio, a cambio de mayores exigencias en monitoreo, pruebas y coordinación entre servicios que deben contemplarse desde el diseño inicial \cite{blinowski2022,laigner2021,waseem2021}.
 
 \section{Objetivos}
-% Pendiente: incorporar objetivo general y 3 a 5 objetivos especificos con indicador de verificacion.
+
+\subsection{Objetivo general}
+
+Diseñar, implementar y validar una plataforma distribuida basada en microservicios para la \textbf{Bolsa de Empleos para Graduados de la UTEQ} que centralice ofertas laborales verificadas institucionalmente y vacantes recolectadas de portales externos, garantizando baja latencia, consistencia en las postulaciones, tolerancia a fallos y cumplimiento de los criterios de calidad de la norma ISO/IEC~25010 al término del periodo académico SPA~2026--2027.
+
+\subsection{Objetivos específicos e indicadores de verificación}
+
+Para alcanzar el objetivo general a lo largo de las entregas E1--E4 del proyecto, se establecen cuatro objetivos específicos medibles (\texttt{OE-01} a \texttt{OE-04}), cada uno vinculado a un indicador cuantitativo verificable al cierre del periodo (Tabla~\ref{tab:objetivos}).
+
+\begin{table}[htbp]
+\centering
+\caption{Objetivos específicos del proyecto e indicadores cuantitativos de verificación.}
+\label{tab:objetivos}
+\small
+\begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}p{6.2cm} X}
+\toprule
+\textbf{Cód.} & \textbf{Objetivo específico} & \textbf{Indicador de verificación al final del periodo} \\
+\midrule
+OE-01 & Especificar los requisitos funcionales y no funcionales (ISO/IEC~25010), la arquitectura C4 (Niveles~1 y~2), los registros ADR y el análisis CAP/PACELC de la plataforma distribuida. & 100\,\% de los 10~RF y 6~RNF cuantificados aprobados en el informe, 2~diagramas C4 y 2~ADR versionados, y esqueleto \texttt{gRPC} validado con \texttt{14/14} pruebas automatizadas (\texttt{OK}). \\
+OE-02 & Desarrollar y contenerizar los microservicios orientados a dominio (\texttt{Perfiles}, \texttt{Postulaciones}, \texttt{Ofertas y Scraping} y \texttt{Notificaciones}) detrás de un \textit{API Gateway} con comunicación híbrida \texttt{REST/gRPC/AMQP}. & 100\,\% de los microservicios núcleo desplegados en contenedores Docker con $p95 \le 300\text{ ms}$ bajo 50~usuarios simultáneos (RNF-01) y escalado de 1 a 3~réplicas en $< 60\text{ s}$ (RNF-03). \\
+OE-03 & Implementar persistencia descentralizada en PostgreSQL por dominio, control idempotente de concurrencia en postulaciones e ingesta asíncrona de ofertas externas mediante \textit{web scraping}. & 0~postulaciones duplicadas ante reintentos concurrentes (RNF-05), tiempo de recuperación $\text{RTO} \le 5\text{ min}$, disponibilidad $\ge 99{,}5$\,\% ante caídas de \textit{scraping} o SMTP (RNF-02) y 100\,\% de ofertas externas con fuente y enlace original (RF-10). \\
+OE-04 & Validar la seguridad perimetral, la trazabilidad auditable y la calidad integral del sistema distribuido conforme a la norma ISO/IEC~25010 en el despliegue integrado final. & 100\,\% del tráfico externo cifrado con TLS~1.3 y control RBAC (RNF-04), 100\,\% de eventos críticos y errores gRPC registrados en $< 1\text{ s}$ con marca UTC e ID de correlación (RNF-06) y $\ge 95$\,\% de pruebas integrales de carga, seguridad y resiliencia aprobadas. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Trabajos relacionados}
 
@@ -467,7 +491,10 @@ Cabe precisar que estas pruebas evalúan la línea base del transporte \texttt{g
 % Pendiente: consolidar enlaces a commits e issues cerrados por integrante antes de la entrega final.
 
 \section{Declaración de uso de inteligencia artificial}
-% Pendiente: declarar herramienta, version, alcance de uso y verificacion realizada por el equipo.
+
+Para la elaboración de esta entrega, el equipo utilizó herramientas de inteligencia artificial generativa como apoyo editorial y de formato. Se empleó principalmente Google Gemini (versión Gemini~4, noviembre de 2026) como apoyo complementario, manteniendo el equipo la autoría de las decisiones arquitectónicas, la implementación y las pruebas.
+
+Gemini se utilizó para detectar faltas ortográficas, identificar puntos y comas omitidos o mal ubicados y sugerir ajustes para mejorar la claridad de la redacción. También se empleó para revisar la estructura del documento en \LaTeX, identificar posibles errores de sintaxis y sugerir ajustes en la alineación y distribución de las filas y columnas de las tablas y matrices.
 
 \printbibliography[title={Referencias}]
 

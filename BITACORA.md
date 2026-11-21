@@ -1,4 +1,4 @@
-``# Bitácora del equipo
+# Bitácora del equipo
 
 Proyecto: **Bolsa de Empleos para Graduados UTEQ — Sistema Distribuido (PFC)**
 Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
@@ -50,16 +50,17 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ## Sesión 2 — 18/11/2026
 
-- **Hora:** 20:00 – 22:30 (aprox.)
-- **Modalidad:** Virtual — Discord / WhatsApp
+- **Hora:** 19:15 – 22:30 (aprox.)
+- **Modalidad:** Virtual — Discord (sala de estudio 3) / WhatsApp y Excalidraw
 - **Presentes:** Luis Jeremy Jaramillo Acosta, Kenny Isaías España Vera, Heiner Ariel Zambrano Ronquillo, Luis Alberto Paca Pilataza
 
 ### Temas tratados
-1. Configuración de permisos de escritura en el tablero público de GitHub Projects para todos los colaboradores.
-2. Planificación de tareas restantes de E1 y creación de los primeros issues de E2 con etiquetas y responsables (#6, #7, #8 y #10).
-3. Inicio del diagrama de contexto C4 Nivel 1 en `draw.io` (issue #8).
-4. Creación de la plantilla base compilable del informe técnico en `docs/main.tex` vinculada a `docs/referencias.bib` (issue #10).
-5. Revisión del avance del cliente gRPC (`servicio_postulaciones`) y coordinación del levantamiento real de información.
+1. Sesión colaborativa de bosquejo arquitectónico inicial en Excalidraw (captura a las `19:20` en `evidencias/sesion_diseno_01.jpeg`), debatiendo base de datos única vs. base de datos por servicio, uso de `gRPC` y cifrado `TLS`.
+2. Configuración de permisos de escritura en el tablero público de GitHub Projects para todos los colaboradores.
+3. Planificación de tareas restantes de E1 y creación de los primeros issues de E2 con etiquetas y responsables (#6, #7, #8 y #10).
+4. Inicio del diagrama de contexto C4 Nivel 1 en `draw.io` (issue #8).
+5. Creación de la plantilla base compilable del informe técnico en `docs/main.tex` vinculada a `docs/referencias.bib` (issue #10).
+6. Revisión del avance del cliente gRPC (`servicio_postulaciones`) y coordinación del levantamiento real de información.
 
 ### Decisiones tomadas
 | # | Decisión | Responsable | Evidencia |
@@ -139,7 +140,32 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
-## Sesión 5 — 20/11/2026
+## Sesión 5 — 19/11/2026
+
+- **Hora:** 22:20 – 23:45 (captura de evidencia a las `23:38`, 1 h 14 min de sesión activa)
+- **Modalidad:** Virtual — Discord (videollamada en sala de estudio 3) y pizarra compartida Excalidraw
+- **Presentes:** Luis Jeremy Jaramillo Acosta, Kenny Isaías España Vera, Heiner Ariel Zambrano Ronquillo, Luis Alberto Paca Pilataza
+
+### Temas tratados
+1. Sesión colaborativa de refinamiento del bosquejo arquitectónico hacia el Diagrama C4 Nivel 2 (Contenedores) en Excalidraw (`evidencias/sesion_diseno_02.jpeg`, `19/11/2026 23:38`).
+2. Delimitación del límite del sistema distribuido (`Bolsa de Empleo UTEQ`), definiendo `App Web (SPA)` → `HTTPS/TLS` → `API Gateway (REST/Enrutamiento/RBAC)`.
+3. Definición de los contenedores de microservicios (`Servicio Perfiles`, `Servicios Postulaciones` en `Python/gRPC` y `Servicios Ofertas Scraping`), cada uno con su almacén `PostgreSQL` aislado (`DB Perfiles`, `DB Postulación`, `DB Ofertas`).
+4. Integración del `Broker AMQP (RabbitMQ)` conectado hacia `Servicios Notificaciones (Consumidor Asíncrono)` y enlaces con los tres sistemas externos (`Padrón / Identidad UTEQ`, `Servicio de Correo SMTP` y `Portales Externos`).
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D14b | Aprobar en equipo el bosquejo refinado de contenedores C4 Nivel 2 con bases `PostgreSQL` por dominio, `gRPC/TLS` interno y mensajería asíncrona `RabbitMQ/AMQP`, consolidando las dos fotografías de diseño colaborativo para el repositorio. | Todo el equipo | `evidencias/sesion_diseno_01.jpeg` (`18/11 19:20`), `evidencias/sesion_diseno_02.jpeg` (`19/11 23:38`) — issue #19, commit `0948b75` |
+
+### Problemas resueltos
+- Se resolvieron en vivo las dudas planteadas en el bosquejo del `18/11` (base de datos aislada por microservicio en lugar de BD única, separación del `API Gateway`, uso de `gRPC` interno y cifrado `TLS`), alineando el diseño antes de su exportación definitiva en `draw.io`.
+
+### Pendientes para la próxima sesión
+- [ ] Subir ambas fotografías de sesiones de diseño a `evidencias/` (issue #19) e integrar el Diagrama C4 Nivel 2 en `docs/main.tex`.
+
+---
+
+## Sesión 6 — 20/11/2026
 
 - **Hora:** 16:00 – 16:20
 - **Modalidad:** Trabajo técnico en repositorio local y verificación QA sobre `origin/main`
@@ -168,6 +194,38 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
+## Sesión 7 — 20/11/2026
+
+- **Hora:** 20:45 – 23:45 (aprox., ~3 horas de trabajo técnico y documentación)
+- **Modalidad:** Trabajo técnico en repositorio local y seguimiento en GitHub Projects
+- **Presentes:** Luis Alberto Paca Pilataza
+
+### Temas tratados
+1. Sincronización del repositorio local con `origin/main` (commit `fb5933f`), apertura y vinculación del **Issue `#23`** en el tablero público `TA-PFC-E1 - Bolsa de Empleos UTEQ`.
+2. Corrección de la portada oficial de `docs/main.tex`: actualización del nombre oficial de la facultad (`Facultad de Ciencias de la Computación`), verificación del código unificado de la asignatura (`ISR-701` coincidente con `README.md` y `BITACORA.md`) y establecimiento de la fecha exacta de entrega (`29 de noviembre de 2026`).
+3. Elaboración completa de la **Sección 3 (`Objetivos`)** en `docs/main.tex`: redacción del objetivo general del sistema distribuido y estructuración de cuatro objetivos específicos medibles (`OE-01` a `OE-04`) con sus indicadores cuantitativos de verificación al cierre del periodo en la tabla `tab:objetivos` (`tabularx` + `booktabs`), alineados con los 10 RF, los 6 RNF (ISO/IEC 25010) y el cronograma de entregas E1–E4.
+4. Redacción y ajuste de la sección **Declaración de uso de inteligencia artificial** en `docs/main.tex`, detallando el empleo de Google Gemini (versión Gemini 4, noviembre de 2026) como apoyo editorial y de formato (detección de faltas ortográficas, signos de puntuación, claridad de redacción, revisión de sintaxis LaTeX y alineación de tablas y matrices).
+5. Validación iterativa de compilación completa en `docs/` mediante `pdflatex -> biber -> pdflatex -> pdflatex`, verificando `0` errores, `11/11` citas IEEE resueltas, ausencia de desbordes horizontales en las secciones redactadas y limpieza de archivos temporales.
+6. Auditoría y saneamiento de `BITACORA.md`: eliminación de dobles acentos graves sueltos en la primera y última línea del archivo, revisión de las marcas de tiempo reales en `evidencias/sesion_diseno_01.jpeg` (`18/11/2026 19:20`) y `evidencias/sesion_diseno_02.jpeg` (`19/11/2026 23:38`), ajuste cronológico de las sesiones de diseño y registro detallado de la jornada de documentación para el cierre del Issue `#23`.
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D17 | Actualizar la portada oficial (`Facultad de Ciencias de la Computación`, `29 de noviembre de 2026`), incorporar la Sección 3 (`Objetivo general` y `OE-01`–`OE-04` con indicadores cuantitativos en `tab:objetivos`) y redactar la `Declaración de uso de inteligencia artificial` en `docs/main.tex`. | Luis Paca | `docs/main.tex` — issue #23 |
+| D18 | Sanear el formato Markdown de `BITACORA.md`, alinear las horas de las sesiones de diseño colaborativo con las evidencias fotográficas (`18/11 19:20` y `19/11 23:38`) y consolidar el cierre del Issue `#23` en un commit atómico junto con `docs/main.tex`. | Luis Paca | `BITACORA.md`, `evidencias/sesion_diseno_01.jpeg`, `evidencias/sesion_diseno_02.jpeg` — issue #23 |
+
+### Problemas resueltos
+- Se eliminaron los dobles acentos graves sueltos al inicio (línea 1) y al final (línea 193) de `BITACORA.md`, que impedían el renderizado correcto del encabezado H1 y del cierre del documento en GitHub.
+- Se corrigió el desfase horario de la Sesión 2 (`18/11`) y se incorporó la sesión nocturna de diseño colaborativo del `19/11` (`22:20 – 23:45`) para guardar correspondencia exacta con las horas visibles en `evidencias/sesion_diseno_01.jpeg` (`19:20`) y `evidencias/sesion_diseno_02.jpeg` (`23:38`).
+- Se verificó mediante compilación completa (`pdflatex -> biber -> pdflatex -> pdflatex`) que `docs/main.tex` compila con `0` errores y `11/11` referencias IEEE resueltas tras las adiciones del Issue `#23`.
+
+### Pendientes para la próxima sesión
+- [ ] Completar las secciones restantes de `docs/main.tex`: *Resumen ejecutivo*, *Análisis de riesgos técnicos* (con `FORM-AC-01`) y *Tabla de aportes individuales*.
+- [ ] Incorporar la evidencia de levantamiento real de información (entrevista o encuesta UTEQ) en `evidencias/` y vincularla con los requisitos del informe.
+- [ ] Grabar y enlazar en `README.md` el video de presentación (5–7 min), compilar el `docs/main.pdf` definitivo para entrega y preparar el PDF de una sola página para el SGA.
+
+---
+
 <!-- Plantilla para nuevas sesiones (copiar debajo)
 
 ## Sesión N — DD/MM/2026
@@ -190,4 +248,3 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 - [ ]
 
 -->
-``
