@@ -351,7 +351,35 @@ Para documentar de manera trazable y verificable las decisiones estructurales de
 \end{itemize}
 
 \section{Análisis de riesgos técnicos}
-% Pendiente: minimo 5 riesgos (al menos 3 derivados del incidente de FORM-AC-01).
+
+El diseño de la \textbf{Bolsa de Empleos para Graduados UTEQ} contempla seis riesgos técnicos prioritarios asociados a su arquitectura de microservicios. Tres de ellos (\textbf{R1}, \textbf{R2} y \textbf{R3}) derivan directamente de las ramas del árbol de fallos analizado por el equipo en \texttt{FORM-AC-01} sobre la interrupción global de Meta/Facebook del 4 de octubre de 2021 ($\approx 5\text{ h } 48\text{ min}$ de indisponibilidad, equivalente a $99{,}19$\,\% mensual frente al umbral de $99{,}5$\,\% exigido en \texttt{RNF-02}) \cite{janardhan2021outage}: un comando de mantenimiento sin freno en la herramienta de auditoría, un fallo en cascada de modo común sobre dependencias críticas y una dependencia circular que bloqueó la recuperación remota. Estudios recientes sobre tolerancia a fallos en cascada en sistemas basados en microservicios confirman que el aislamiento entre rutas transaccionales y procesos secundarios debe verificarse antes de producción \cite{zheng2026tolerance}.
+
+Los riesgos restantes (\textbf{R4}, \textbf{R5} y \textbf{R6}) cubren fallos propios del dominio universitario: duplicación de postulaciones por reintentos de red, particiones contra el padrón institucional y exposición de datos personales de los graduados. La Tabla~\ref{tab:riesgos} resume para cada riesgo su origen, probabilidad, impacto, modelo formal de fallo, medida de mitigación y verificación técnica concreta.
+
+\begin{table}[htbp]
+\centering
+\caption{Matriz de riesgos técnicos, modelos de fallo, mitigación y verificación.}
+\label{tab:riesgos}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.75cm} >{\raggedright\arraybackslash}p{2.9cm} >{\centering\arraybackslash}p{1.25cm} >{\raggedright\arraybackslash}p{1.75cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.95cm}}
+\toprule
+\textbf{Riesgo / Origen} & \textbf{Descripción técnica} & \textbf{Prob. / Imp.} & \textbf{Modelo de fallo} & \textbf{Medida de mitigación} & \textbf{Verificación concreta} \\
+\midrule
+\textbf{R1}\newline FORM-AC-01\newline (Rama~B) & Acoplamiento con el \textit{web scraping}: portales externos lentos o caídos saturan hilos o la BD y propagan el fallo en cascada \cite{janardhan2021outage,zheng2026tolerance}. & Alta /\newline Alto & Temporización y omisión en cascada & Contenedor aislado, cola RabbitMQ/\texttt{AMQP}, \textit{timeouts} estrictos y patrón \textit{Circuit Breaker} (\texttt{RNF-02}). & Inyectar retardo o caída al recolector bajo carga y medir $p95 \le 300\text{ ms}$ con 0 errores en Postulaciones. \\
+\addlinespace
+\textbf{R2}\newline FORM-AC-01\newline (Rama~C) & Dependencia circular entre 2FA/alertas y SMTP externo: una caída de correo bloquea el acceso de administradores UTEQ (análogo al bloqueo \textit{out-of-band} de Meta) \cite{janardhan2021outage}. & Media /\newline Alto & Omisión de mensajes & Despacho asíncrono vía \texttt{AMQP} con \textit{exponential backoff} y respaldo \textit{out-of-band} (códigos de recuperación o TOTP) para administradores. & Desconectar el SMTP simulado y confirmar acceso administrativo por respaldo y retención intacta de eventos en cola. \\
+\addlinespace
+\textbf{R3}\newline FORM-AC-01\newline (Rama~A) & Cambio de configuración o contrato erróneo desplegado sin validación previa ni reversión, rompiendo la disponibilidad $\ge 99{,}5$\,\% \cite{janardhan2021outage}. & Media /\newline Crítico & \textit{Crash-stop} & Entorno de \textit{staging} con validación CI/CD de contratos \texttt{.proto}, \textit{health-checks} independientes por contenedor y \textit{rollback} automático (\texttt{RNF-05}). & Simular despliegue con configuración inválida en \textit{staging}, confirmar rechazo en CI y reversión con $\text{RTO} \le 5\text{ min}$. \\
+\addlinespace
+\textbf{R4}\newline Propio PFC\newline (\texttt{RF-05}) & Reintentos de red o doble envío del graduado generan registros duplicados en el servicio de postulaciones. & Alta /\newline Medio & Temporización y duplicación & Clave de idempotencia por par graduado--oferta con restricción \texttt{UNIQUE} en PostgreSQL y \textit{deadline} de \texttt{2 s} en gRPC (\texttt{RNF-05}). & Ejecutar prueba automatizada de reintentos secuenciales y concurrentes verificando 0 postulaciones duplicadas. \\
+\addlinespace
+\textbf{R5}\newline Propio PFC\newline (\texttt{RF-02}) & Partición de red o indisponibilidad de \texttt{BD Perfiles} o del Padrón UTEQ durante picos de convocatorias. & Media /\newline Alto & Omisión / partición de red & Política \texttt{CP / PC-EC}: rechazar con \texttt{UNAVAILABLE} o \texttt{DEADLINE\_EXCEEDED} en \texttt{2 s} antes que aprobar egresados no habilitados. & Ejecutar pruebas \texttt{unittest} contra puerto cerrado y servidor lento (\texttt{600 ms}) sin caída del cliente. \\
+\addlinespace
+\textbf{R6}\newline Propio PFC\newline (\texttt{RNF-04}) & Exposición de datos personales (hojas de vida, correos) o acceso indebido entre empresas colaboradoras en el borde público. & Baja /\newline Crítico & Bizantino / acceso malicioso & Cifrado \texttt{TLS 1.3} externo y \texttt{mTLS} interno, \textit{hash} Argon2/bcrypt, control \texttt{RBAC}, rechazo \texttt{INVALID\_ARGUMENT} y auditoría UTC (\texttt{RNF-06}). & Auditoría de certificados TLS, pruebas de acceso cruzado entre empresas y verificación de registros UTC ($< 1\text{ s}$). \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Plan del proyecto}
 
