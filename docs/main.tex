@@ -602,13 +602,40 @@ Validación de entradas inválidas & RF-02 / RNF-05 & Rechazo controlado con \te
 Cabe precisar que estas pruebas evalúan la línea base del transporte \texttt{gRPC} contra el padrón en memoria definido para E1; la suite ya soporta la variable de entorno \texttt{GRPC\_TARGET} para reutilizarse en E2 y E3 contra los contenedores Docker y las bases de datos \texttt{PostgreSQL} reales.
 
 \section{Tabla de aportes individuales}
-% Pendiente: consolidar enlaces a commits e issues cerrados por integrante antes de la entrega final.
+
+La Tabla~\ref{tab:aportes} consolida la participación verificable de cada integrante en el repositorio público durante la Entrega~1 (\texttt{TA-PFC-E1}), con enlaces directos a los \textit{commits} e \textit{issues} registrados en GitHub.
+
+\begin{table}[htbp]
+\newcommand{\ghrepo}{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}
+\newcommand{\ghcommit}[1]{\href{\ghrepo/commit/#1}{\texttt{#1}}}
+\newcommand{\ghissue}[1]{\href{\ghrepo/issues/#1}{\texttt{\##1}}}
+\centering
+\caption{Aportes individuales verificables por integrante (commits e issues en GitHub).}
+\label{tab:aportes}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.2cm} >{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.1cm}}
+\toprule
+\textbf{Integrante (GitHub)} & \textbf{Rol} & \textbf{Principales entregables en E1} & \textbf{Commits verificables} & \textbf{Issues} \\
+\midrule
+Luis Jeremy Jaramillo Acosta\newline (\texttt{@JeremyJaramillo72}) & Arquitecto & Estructura base, \texttt{ADR-001}, diagramas C4 Nivel~1 y Nivel~2 (\texttt{.drawio} y PNG HD), sesiones de diseño, Análisis de riesgos (\texttt{FORM-AC-01}), alineación C4-N2/CAP y validación \texttt{16/16 OK} con idempotencia \texttt{RNF-05} en clon limpio. & \ghcommit{5145102}, \ghcommit{1006b52}, \ghcommit{cd91901}, \ghcommit{05e090a}, \ghcommit{0524936}, \ghcommit{08ce957}, \ghcommit{82ed65c}, \ghcommit{2b5d3c5}, \ghcommit{af177c8}, \ghcommit{0948b75}, \ghcommit{fb5933f}, \ghcommit{85c601d}, \ghcommit{7a9420a}, \ghcommit{6a6afc5}, \ghcommit{a06a895}, \ghcommit{21268da} & E1: \ghissue{1}, \ghissue{8}, \ghissue{14}, \ghissue{19}, \ghissue{21}, \ghissue{24}\newline E2: \ghissue{6} \\
+\addlinespace
+Kenny Isaías España Vera\newline (\texttt{@kespanav}) & Líder de Desarrollo & Referencias iniciales, \texttt{ADR-002}, cliente gRPC (\path{cliente_postulaciones.py}), generador de \textit{stubs}, validación \texttt{INVALID\_ARGUMENT}, \textit{timeouts} (\texttt{2 s}), idempotencia \texttt{RNF-05} y metadatos en \texttt{README.md}. & \ghcommit{0143564}, \ghcommit{6bb3142}, \ghcommit{e317f0f}, \ghcommit{c00a4bd}, \ghcommit{ee48ae8}, \ghcommit{435270a}, \ghcommit{fcd9b07}, \ghcommit{f5eac9c} & E1: \ghissue{4}, \ghissue{5}, \ghissue{11}, \ghissue{18}, \ghissue{22}\newline E2: \ghissue{9} \\
+\addlinespace
+Heiner Ariel Zambrano Ronquillo\newline (\texttt{@Heiner-ZZZ}) & Responsable de Calidad & Referencias de arquitectura, servidor gRPC (\path{servidor_perfiles.py}), capturas de ejecución, suite \texttt{unittest} (carga \texttt{RNF-01} y resiliencia), justificación distribuida, trabajos relacionados, guía LaTeX, levantamiento real (\path{evidencias/levantamiento/}) y matriz de trazabilidad RF/RNF. & \ghcommit{6505401}, \ghcommit{2db0cc6}, \ghcommit{d60e184}, \ghcommit{3463719}, \ghcommit{e7b9a68}, \ghcommit{c47aae1}, \ghcommit{a65f861}, \ghcommit{33a393d}, \ghcommit{71f442c} & E1: \ghissue{3}, \ghissue{15}, \ghissue{17}, \ghissue{26}\newline E2: \ghissue{7} \\
+\addlinespace
+Luis Alberto Paca Pilataza\newline (\texttt{@Luis-paca}) & Responsable de Documentación & Contrato \path{proto/bolsa_uteq.proto}, plantilla y consolidación \LaTeX\ IEEE (\path{docs/main.tex}: portada, resumen ejecutivo, contexto, objetivos \texttt{OE-01}--\texttt{OE-04}, 10~RF, 6~RNF, comunicación, CAP/PACELC, ADR, plan/tablero, aportes e IA), \path{docs/hoja_sga.tex} y gestión/saneamiento de \texttt{BITACORA.md}. & \ghcommit{fbb4f66}, \ghcommit{c8d4422}, \ghcommit{05970d3}, \ghcommit{730d84e}, \ghcommit{fb13a60}, \ghcommit{f783484}, \ghcommit{5c115c0}, \ghcommit{395b1ad}, \ghcommit{274c894}, \ghcommit{028664c}, \ghcommit{06ac804} & E1: \ghissue{2}, \ghissue{10}, \ghissue{12}, \ghissue{16}, \ghissue{23}, \ghissue{25}\newline E2: \ghissue{20} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \section{Declaración de uso de inteligencia artificial}
 
-Para la elaboración de esta entrega, el equipo utilizó herramientas de inteligencia artificial generativa como apoyo editorial y de formato. Se empleó principalmente Google Gemini (versión Gemini~4, noviembre de 2026) como apoyo complementario, manteniendo el equipo la autoría de las decisiones arquitectónicas, la implementación y las pruebas.
+Para la elaboración de esta entrega, el equipo utilizó herramientas de inteligencia artificial generativa únicamente como apoyo editorial y de formato. Se empleó el modelo Google Gemini (versión Gemini~4, noviembre de 2026) como apoyo complementario, manteniendo el equipo la autoría de las decisiones arquitectónicas, la implementación y las pruebas.
 
-Gemini se utilizó para detectar faltas ortográficas, identificar puntos y comas omitidos o mal ubicados y sugerir ajustes para mejorar la claridad de la redacción. También se empleó para revisar la estructura del documento en \LaTeX, identificar posibles errores de sintaxis y sugerir ajustes en la alineación y distribución de las filas y columnas de las tablas y matrices.
+Google Gemini~4 se utilizó exclusivamente para detectar faltas ortográficas, identificar puntos y comas omitidos o mal ubicados y sugerir ajustes para mejorar la claridad de la redacción. También se empleó para revisar la estructura del documento en \LaTeX, identificar posibles errores de sintaxis y sugerir ajustes en la alineación y distribución de las filas y columnas de las tablas y matrices.
+
+\textbf{Verificación realizada por el equipo:} cada sugerencia de ortografía, puntuación y formato en \LaTeX\ propuesta por Google Gemini~4 fue revisada manualmente por los integrantes antes de aplicarla al repositorio, comprobando que se mantuviera íntegro el sentido técnico de cada sección; posteriormente, el equipo validó la estructura final compilando \path{docs/main.tex} con \texttt{pdflatex} y \texttt{biber} para verificar cero errores de sintaxis, cero citas sin resolver y la correcta alineación visual de tablas, figuras y referencias en el documento PDF.
 
 \printbibliography[title={Referencias}]
 
