@@ -94,7 +94,7 @@ Para alcanzar el objetivo general a lo largo de las entregas E1--E4 del proyecto
 \toprule
 \textbf{Cód.} & \textbf{Objetivo específico} & \textbf{Indicador de verificación al final del periodo} \\
 \midrule
-OE-01 & Especificar los requisitos funcionales y no funcionales (ISO/IEC~25010), la arquitectura C4 (Niveles~1 y~2), los registros ADR y el análisis CAP/PACELC de la plataforma distribuida. & 100\,\% de los 10~RF y 6~RNF cuantificados aprobados en el informe, 2~diagramas C4 y 2~ADR versionados, y esqueleto \texttt{gRPC} validado con \texttt{14/14} pruebas automatizadas (\texttt{OK}). \\
+OE-01 & Especificar los requisitos funcionales y no funcionales (ISO/IEC~25010), la arquitectura C4 (Niveles~1 y~2), los registros ADR y el análisis CAP/PACELC de la plataforma distribuida. & 100\,\% de los 10~RF y 6~RNF cuantificados aprobados en el informe, 2~diagramas C4 y 2~ADR versionados, y esqueleto \texttt{gRPC} validado con \texttt{16/16} pruebas automatizadas (\texttt{OK}). \\
 OE-02 & Desarrollar y contenerizar los cinco microservicios orientados a dominio (\texttt{Perfiles}, \texttt{Postulaciones}, \texttt{Ofertas y Validación}, \texttt{Ingesta Externa} y \texttt{Notificaciones}) detrás de un \textit{API Gateway} con comunicación híbrida \texttt{REST/gRPC/AMQP}. & 100\,\% de los microservicios núcleo desplegados en contenedores Docker con $p95 \le 300\text{ ms}$ bajo 50~usuarios simultáneos (RNF-01) y escalado de 1 a 3~réplicas en $< 60\text{ s}$ (RNF-03). \\
 OE-03 & Implementar persistencia descentralizada en PostgreSQL por dominio, control idempotente de concurrencia en postulaciones e ingesta asíncrona de ofertas externas mediante \textit{web scraping}. & 0~postulaciones duplicadas ante reintentos concurrentes (RNF-05), tiempo de recuperación $\text{RTO} \le 5\text{ min}$, disponibilidad $\ge 99{,}5$\,\% ante caídas de \textit{scraping} o SMTP (RNF-02) y 100\,\% de ofertas externas con fuente y enlace original (RF-10). \\
 OE-04 & Validar la seguridad perimetral, la trazabilidad auditable y la calidad integral del sistema distribuido conforme a la norma ISO/IEC~25010 en el despliegue integrado final. & 100\,\% del tráfico externo cifrado con TLS~1.3 y control RBAC (RNF-04), 100\,\% de eventos críticos y errores gRPC registrados en $< 1\text{ s}$ con marca UTC e ID de correlación (RNF-06) y $\ge 95$\,\% de pruebas integrales de carga, seguridad y resiliencia aprobadas. \\
@@ -298,6 +298,8 @@ El modelo se articula en tres planos complementarios:
     \item \textbf{Comunicación asíncrona orientada a eventos (\texttt{AMQP}):} empleada mediante colas de mensajería para el envío de alertas por correo electrónico y la sincronización periódica de vacantes recolectadas por \textit{web scraping} (RF-10), evitando bloquear las respuestas al usuario y garantizando aislamiento ante fallos parciales (RNF-02).
 \end{enumerate}
 
+Esta selección se respalda además en la evaluación experimental ejecutada por el propio equipo en \texttt{PE-U1} (\texttt{GA-SUM-02}), donde se compararon \texttt{Sockets TCP} y \texttt{gRPC} sobre tres nodos en cargas secuenciales ($n = 500$) y concurrentes ($n = 1\,500$, 3 clientes). Aunque \texttt{Sockets TCP} registró latencias locales menores en \textit{loopback} (media entre $0{,}088\text{ ms}$ y $0{,}199\text{ ms}$; $p95 \le 0{,}304\text{ ms}$), \texttt{gRPC} mantuvo latencias submilisegundo en todos los escenarios (media entre $0{,}465\text{ ms}$ y $0{,}676\text{ ms}$; $p95 = 0{,}979\text{ ms}$ con 100~B concurrentes y $p95 = 0{,}882\text{ ms}$ con 10~KB concurrentes) y un rendimiento sostenido superior a $5\,150\text{ msg/s}$ bajo concurrencia. Dado que dicho $p95$ es más de 300 veces inferior al umbral de $300\text{ ms}$ fijado en \texttt{RNF-01}, se prioriza \texttt{gRPC} frente a sockets crudos para evitar reimplementar manualmente \textit{framing}, multiplexación HTTP/2, \textit{deadlines} nativos, códigos de error tipados, cifrado \texttt{mTLS} y contratos versionables \texttt{.proto}.
+
 La Tabla~\ref{tab:comunicacion} detalla las interacciones principales entre servicios internos y sistemas externos.
 
 \begin{table}[htbp]
@@ -488,44 +490,44 @@ El contrato de interfaz se define en \texttt{proto3} dentro de \texttt{proto/bol
 \end{tabularx}
 \end{table}
 
-Los \textit{stubs} generados (\path{bolsa_uteq_pb2.py} y \path{bolsa_uteq_pb2_grpc.py}) se almacenan en \path{src/generated/} y se regeneran con el script \path{scripts/generar_stubs.py}. Para esta entrega, \path{servidor_perfiles.py} expone \texttt{PerfilService} en el puerto \texttt{50051} (con un grupo de 4 hilos de atención) consultando un padrón inicial en memoria (\texttt{GRADUADOS\_UTEQ}), mientras que \path{cliente_postulaciones.py} se conecta al destino configurado en \texttt{PERFILES\_ADDR} (por defecto \texttt{localhost:50051}) con un tiempo de espera de 5~s y captura controlada de errores \texttt{grpc.RpcError}.
+Los \textit{stubs} generados (\path{bolsa_uteq_pb2.py} y \path{bolsa_uteq_pb2_grpc.py}) se almacenan en \path{src/generated/} y se regeneran con el script \path{scripts/generar_stubs.py}. Para esta entrega, \path{servidor_perfiles.py} expone \texttt{PerfilService} en el puerto \texttt{50051} (con un grupo de 4 hilos de atención) consultando un padrón inicial en memoria (\texttt{GRADUADOS\_UTEQ}), mientras que \path{cliente_postulaciones.py} se conecta al destino configurado en \texttt{PERFILES\_ADDR} (por defecto \texttt{localhost:50051}) con un tiempo de espera (\textit{deadline}) de 2~s, control idempotente de duplicados (\texttt{RegistroPostulaciones}, \texttt{RNF-05}) y captura controlada de errores \texttt{grpc.RpcError}.
 
 \subsection{Evidencias de ejecución del esqueleto}
 
-La verificación de la comunicación entre procesos se ejecutó el 19 de noviembre de 2026 en el equipo \texttt{HP} (usuario \texttt{hp\textbackslash heiner}), evaluando dos casos contra la oferta \texttt{OF-2026-001}: un graduado habilitado en el padrón (\texttt{ID=0000000002}) y una cédula ficticia no registrada (\texttt{ID=0999999999}).
+La verificación de la comunicación entre procesos desde un clon limpio del repositorio se ejecutó el 21 de noviembre de 2026 en el equipo \texttt{Jeremy} (usuario \texttt{jeremy\textbackslash jeremy jaramillo}), evaluando los cinco casos implementados en \path{cliente_postulaciones.py} contra la oferta \texttt{OF-2026-001} con \textit{deadline} de \texttt{2,0 s}: (a)~graduado habilitado (\texttt{GRAD-TEST-002}, resultado \texttt{ACEPTADA}), (b)~reintento duplicado del mismo graduado (\texttt{DUPLICADA}, \texttt{RNF-05}), (c)~identificador mal formado (\texttt{ID-INVALIDO}) e identificador vacío (\texttt{""}), ambos rechazados con \texttt{INVALID\_ARGUMENT}, y (d)~identificador sintético no registrado (\texttt{GRAD-TEST-999}, resultado \texttt{NO ELEGIBLE}).
 
-La Figura~\ref{fig:ejecucion-servidor} evidencia el inicio del servidor gRPC \texttt{servicio\_perfiles} (\texttt{PID=1268}) escuchando en el puerto \texttt{50051} junto con la salida de \texttt{whoami}, \texttt{hostname} y \texttt{Get-Date}. La Figura~\ref{fig:ejecucion-cliente} muestra la ejecución del cliente \texttt{servicio\_postulaciones} (\texttt{PID=21600}) recibiendo las respuestas \texttt{ELEGIBLE} y \texttt{NO ELEGIBLE}. Por último, la Figura~\ref{fig:ejecucion-conjunta} presenta ambas terminales en paralelo, verificando el registro correlacionado de solicitudes recibidas por el servidor y respuestas procesadas por el cliente a las \texttt{00:16:50}.
+La Figura~\ref{fig:ejecucion-servidor} evidencia el inicio del servidor gRPC \texttt{servicio\_perfiles} (\texttt{PID=22704}) escuchando en el puerto \texttt{50051} a las \texttt{21:08:09} junto con la salida de \texttt{whoami}, \texttt{hostname} y \texttt{Get-Date}. La Figura~\ref{fig:ejecucion-cliente} muestra la ejecución completa del cliente \texttt{servicio\_postulaciones} (\texttt{PID=8040}) a las \texttt{21:09:29--21:09:30} con el resumen de los cinco casos y un único registro en memoria (\texttt{('GRAD-TEST-002', 'OF-2026-001')}). Por último, la Figura~\ref{fig:ejecucion-conjunta} presenta ambas terminales en paralelo, corroborando que el servidor atendió las cuatro invocaciones RPC a las \texttt{21:09:30} mientras el reintento duplicado fue interceptado localmente por \texttt{RegistroPostulaciones}.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_01.png}
-    \caption{Arranque del servidor gRPC \texttt{servicio\_perfiles} en el puerto 50051 (\texttt{Equipo=HP}, usuario \texttt{hp\textbackslash heiner}, \texttt{PID=1268}, 19 de noviembre de 2026 a las 00:16:47).}
+    \includegraphics[width=0.88\textwidth]{../evidencias/captura_ejecucion_01.png}
+    \caption{Arranque del servidor gRPC \texttt{servicio\_perfiles} en el puerto 50051 (\texttt{Equipo=Jeremy}, usuario \texttt{jeremy\textbackslash jeremy jaramillo}, \texttt{PID=22704}, 21 de noviembre de 2026 a las 21:08:09).}
     \label{fig:ejecucion-servidor}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_02.png}
-    \caption{Ejecución del cliente gRPC \texttt{servicio\_postulaciones} (\texttt{PID=21600}) invocando \texttt{VerificarElegibilidad} hacia \texttt{localhost:50051} con resultado \texttt{ELEGIBLE} para \texttt{ID=0000000002} y \texttt{NO ELEGIBLE} para \texttt{ID=0999999999}.}
+    \includegraphics[width=0.95\textwidth]{../evidencias/captura_ejecucion_02.png}
+    \caption{Ejecución completa del cliente gRPC \texttt{servicio\_postulaciones} (\texttt{PID=8040}, 21 de noviembre de 2026 a las 21:09:29--21:09:30) mostrando los cinco casos evaluados (\texttt{ACEPTADA}, \texttt{DUPLICADA} \texttt{RNF-05}, \texttt{INVALID\_ARGUMENT} y \texttt{NO ELEGIBLE}) junto con \texttt{whoami}, \texttt{hostname} y \texttt{Get-Date}.}
     \label{fig:ejecucion-cliente}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.92\textwidth]{../evidencias/captura_ejecucion_03.png}
-    \caption{Ejecución simultánea de \texttt{servicio\_perfiles} (terminal superior) y \texttt{servicio\_postulaciones} (terminal inferior), evidenciando la trazabilidad de solicitudes y respuestas gRPC a las 00:16:50 del 19 de noviembre de 2026.}
+    \includegraphics[width=0.96\textwidth]{../evidencias/captura_ejecucion_03.png}
+    \caption{Ejecución simultánea de \texttt{servicio\_perfiles} (izquierda, \texttt{PID=22704}) y \texttt{servicio\_postulaciones} (derecha), verificando las solicitudes y respuestas gRPC correlacionadas a las 21:09:30 del 21 de noviembre de 2026.}
     \label{fig:ejecucion-conjunta}
 \end{figure}
 
-\subsection{Pruebas automatizadas de contrato, carga (RNF-01) y resiliencia}
+\subsection{Pruebas automatizadas de contrato, carga (RNF-01), idempotencia (RNF-05) y resiliencia}
 
-Para respaldar con mediciones verificables la comunicación gRPC y el comportamiento del esqueleto frente a \texttt{RNF-01}, \texttt{RNF-02} y \texttt{RNF-05}, se implementó una suite automatizada basada en \texttt{unittest} en \path{tests/test_contratos_grpc.py} (6 casos de contrato Protobuf y serialización) y \path{tests/test_integracion_perfiles_grpc.py} (8 casos de integración, concurrencia, carga y tolerancia a fallos), utilizando únicamente identificadores sintéticos. Tras el robustecimiento del esqueleto en el issue~\#18 (formato \texttt{GRAD-TEST-NNN}, rechazo \texttt{INVALID\_ARGUMENT} y registro idempotente en \path{cliente_postulaciones.py}), los 14 casos continúan aprobando íntegramente (\texttt{OK}).
+Para respaldar con mediciones verificables la comunicación gRPC y el comportamiento del esqueleto frente a \texttt{RNF-01}, \texttt{RNF-02} y \texttt{RNF-05}, se implementó una suite automatizada basada en \texttt{unittest} en \path{tests/test_contratos_grpc.py} (6 casos de contrato Protobuf y serialización) y \path{tests/test_integracion_perfiles_grpc.py} (10 casos de integración, concurrencia, carga, idempotencia secuencial/concurrente y tolerancia a fallos), utilizando únicamente identificadores sintéticos (\texttt{GRAD-TEST-NNN}).
 
-La Tabla~\ref{tab:resultados-pruebas-grpc} y la Figura~\ref{fig:pruebas-unitarias} registran los resultados reales obtenidos al ejecutar \texttt{python -m unittest discover -s tests -v} sobre el equipo \texttt{HP} (\texttt{hp\textbackslash heiner}) el 19 de noviembre de 2026 a las 19:56:55.
+La Tabla~\ref{tab:resultados-pruebas-grpc} y la Figura~\ref{fig:pruebas-unitarias} registran los resultados reales obtenidos al ejecutar \texttt{python -m unittest discover -s tests -v} sobre el clon limpio en el equipo \texttt{Jeremy} el 21 de noviembre de 2026 (\texttt{16/16 OK} en \texttt{2,404 s}).
 
 \begin{table}[htbp]
 \centering
-\caption{Resultados medidos de la suite automatizada gRPC (\texttt{14/14 OK} en \texttt{2,890 s}).}
+\caption{Resultados medidos de la suite automatizada gRPC (\texttt{16/16 OK} en \texttt{2,404 s}).}
 \label{tab:resultados-pruebas-grpc}
 \small
 \begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.6cm} >{\raggedright\arraybackslash}p{2.3cm} X l}
@@ -533,12 +535,13 @@ La Tabla~\ref{tab:resultados-pruebas-grpc} y la Figura~\ref{fig:pruebas-unitaria
 \textbf{Prueba ejecutada} & \textbf{Requisito} & \textbf{Resultado empírico medido} & \textbf{Estado} \\
 \midrule
 Contratos Protobuf y \textit{stub} (6 casos) & RF-02 / ADR-002 & Descriptores, tipos y serialización binaria sin pérdida en \texttt{ConsultaGraduadoRequest} y \texttt{ElegibilidadResponse}. & OK \\
-Latencia secuencial (30 llamadas) & RNF-01 & Promedio \texttt{5,838 ms}; $p95 = 6{,}749\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
+Latencia secuencial (30 llamadas) & RNF-01 & Promedio \texttt{0,806 ms}; $p95 = 1{,}046\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
 Disponibilidad concurrente (20 hilos) & RNF-02 & \texttt{20/20} exitosas (\texttt{100,00\,\%}), \texttt{0} errores RPC. & OK \\
-Carga simultánea (50 clientes virtuales) & RNF-01 & \texttt{50/50} (\texttt{100,00\,\%}); promedio \texttt{198,916 ms}, $p50 = 225{,}364\text{ ms}$, $p95 = 227{,}031\text{ ms}$, $p99 = 227{,}421\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
+Carga simultánea (50 clientes virtuales) & RNF-01 & \texttt{50/50} (\texttt{100,00\,\%}); promedio \texttt{35,375 ms}, $p50 = 36{,}309\text{ ms}$, $p95 = 38{,}259\text{ ms}$, $p99 = 38{,}435\text{ ms}$ ($\le 300\text{ ms}$). & OK \\
+Idempotencia secuencial y concurrente (2 casos) & RF-05 / RNF-05 & Reintento secuencial rechazado como \texttt{DUPLICADA}; en 20 hilos simultáneos: \texttt{1} \texttt{ACEPTADA}, \texttt{19} \texttt{DUPLICADA} y \texttt{1} registro (\texttt{0} duplicados). & OK \\
 Tolerancia a fallos (\texttt{UNAVAILABLE}) & RNF-02 & Puerto cerrado retorna \texttt{UNAVAILABLE}; \texttt{cliente\_postulaciones} captura el error sin detener la ejecución. & OK \\
 Control de \textit{timeout} (\texttt{DEADLINE\_EXCEEDED}) & RNF-01 / RNF-02 & Servidor con retardo de \texttt{600 ms} aborta exactamente con \texttt{DEADLINE\_EXCEEDED} al vencer \textit{deadline} de \texttt{100 ms}. & OK \\
-Validación de entradas inválidas & RF-02 / RNF-05 & Rechazo controlado sin caída del servidor (actualizado a \texttt{INVALID\_ARGUMENT} en el issue~\#18). & OK \\
+Validación de entradas inválidas & RF-02 / RNF-05 & Rechazo controlado con \texttt{INVALID\_ARGUMENT} ante 5 casos borde sin caída del servidor. & OK \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -546,7 +549,7 @@ Validación de entradas inválidas & RF-02 / RNF-05 & Rechazo controlado sin ca�
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.95\textwidth]{../evidencias/captura_pruebas_unitarias.png}
-    \caption{Ejecución de la suite automatizada \texttt{unittest} (\texttt{14/14 OK} en \texttt{2,890 s}) mostrando \texttt{whoami}, \texttt{hostname}, fecha/hora del sistema, métricas de carga \texttt{RNF-01} con 50 clientes concurrentes y pruebas de resiliencia gRPC.}
+    \caption{Ejecución de la suite automatizada \texttt{unittest} (\texttt{16/16 OK} en \texttt{2,404 s}) mostrando métricas de carga \texttt{RNF-01} con 50 clientes concurrentes, idempotencia concurrente \texttt{RNF-05} (20 hilos, 0 duplicados), latencia secuencial y pruebas de resiliencia gRPC.}
     \label{fig:pruebas-unitarias}
 \end{figure}
 
