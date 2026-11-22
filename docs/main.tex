@@ -55,7 +55,12 @@
 \newpage
 
 \section{Resumen ejecutivo}
-% Pendiente: redactar entre 300 y 400 palabras tras consolidar el levantamiento real y la arquitectura C4.
+
+La inserción laboral de los graduados de la Universidad Técnica Estatal de Quevedo (UTEQ) enfrenta actualmente la dispersión de ofertas en redes sociales, grupos informales y portales de empleo sin verificación institucional. Esta fragmentación alarga el tiempo de búsqueda, expone a los egresados a vacantes vencidas o poco confiables e impide a las autoridades académicas contar con indicadores verificables de empleabilidad por carrera. Para atender esta necesidad, el presente proyecto propone la \textbf{Bolsa de Empleos para Graduados UTEQ}, orientada a tres grupos de usuarios: graduados que gestionan su perfil, filtran oportunidades y postulan en línea; empresas colaboradoras que publican vacantes y evalúan postulantes; y administradores universitarios encargados de validar las ofertas, auditar operaciones y emitir reportes institucionales.
+
+Resolver este problema exige una arquitectura distribuida porque la plataforma combina dos perfiles de carga incompatibles en un despliegue monolítico: operaciones transaccionales interactivas que requieren baja latencia y consistencia fuerte (verificación de elegibilidad y registro único de postulaciones) frente a procesos intensivos en entrada/salida dependientes de terceros, como la recolección periódica de vacantes externas mediante \textit{web scraping} y el despacho de alertas por correo SMTP. Se adopta una arquitectura de microservicios orientados a dominio con bases de datos PostgreSQL aisladas, fachada pública HTTPS/REST tras un \textit{API Gateway}, invocaciones internas síncronas por gRPC con Protocol Buffers y mensajería asíncrona AMQP con RabbitMQ. Esta separación aísla fallos parciales, habilita escalado horizontal selectivo y aplica políticas CAP/PACELC diferenciadas: consistencia fuerte (CP/PC-EC) en Perfiles y Postulaciones, y alta disponibilidad con consistencia eventual (AP/PA-EL) en el catálogo de ofertas y notificaciones.
+
+El alcance planificado cubre las cuatro entregas del periodo académico 2026--2027. En esta primera entrega (E1) se especifican diez requisitos funcionales, seis requisitos no funcionales cuantificados bajo ISO/IEC~25010, los diagramas C4 de contexto y contenedores, los registros ADR-001 y ADR-002, el análisis de riesgos técnicos derivado de FORM-AC-01 y un esqueleto funcional gRPC validado con pruebas automatizadas. En las entregas siguientes se desarrollarán los microservicios contenerizados en Docker (E2), la persistencia distribuida y la ingesta asíncrona (E3), y la validación integral de seguridad, resiliencia y calidad previa a la defensa final (E4).
 
 \section{Contexto y problema}
 
@@ -393,6 +398,15 @@ El seguimiento de tareas se realiza mediante el tablero público \texttt{TA-PFC-
     \item \textbf{Responsable de Calidad (Heiner Ariel Zambrano Ronquillo):} implementación de servicios base, ejecución de pruebas de comunicación, evidencias técnicas y verificación de requisitos de calidad.
     \item \textbf{Responsable de Documentación (Luis Alberto Paca Pilataza):} contrato de interfaz inicial, consolidación del informe LaTeX en formato IEEE, gestión de \texttt{BITACORA.md} y documentación técnica.
 \end{itemize}
+
+La Figura~\ref{fig:tablero-projects} evidencia el estado del tablero en GitHub Projects con las tareas de \texttt{E1} asignadas y cerradas por rol y los cuatro \textit{issues} de planificación de \texttt{E2} (\texttt{\#6}, \texttt{\#7}, \texttt{\#9} y \texttt{\#20}).
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.96\textwidth]{../evidencias/tablero_github_projects.png}
+    \caption{Tablero público \texttt{TA-PFC-E1 - Bolsa de Empleos UTEQ} en GitHub Projects con los \textit{issues} de E1 y la planificación inicial de E2 asignados por integrante.}
+    \label{fig:tablero-projects}
+\end{figure}
 
 \subsection{Cronograma de entregas del PFC}
 

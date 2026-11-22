@@ -1,0 +1,74 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{UNIVERSIDAD TÉCNICA ESTATAL DE QUEVEDO}}\\[0.12cm]
+    {\large Facultad de Ciencias de la Computación}\\[0.08cm]
+    {\large Carrera de Ingeniería en Software}\\[0.35cm]
+
+    \rule{\linewidth}{0.5mm}\\[0.2cm]
+    {\LARGE \textbf{Bolsa de Empleos para Graduados UTEQ}}\\[0.15cm]
+    {\large Proyecto Fin de Curso — Entrega 1 (TA-PFC-E1)\\Definición, Requisitos y Arquitectura Base del Sistema Distribuido}\\[0.12cm]
+    \rule{\linewidth}{0.5mm}\\[0.35cm]
+
+    \textbf{Asignatura:} Aplicaciones Distribuidas (ISR-701) \quad|\quad
+    \textbf{Periodo:} SPA 2026--2027 \quad|\quad
+    \textbf{Fecha de entrega:} 29 de noviembre de 2026
+\end{center}
+
+\vspace{0.2cm}
+
+\noindent{\large\textbf{1. Enlace al repositorio público oficial (GitHub)}}\\[0.15cm]
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\centering\href{https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}{\texttt{\footnotesize https://github.com/JeremyJaramillo72/TA-PFC-E1-PFC-Entrega-1-Propuesta-y-An-lisis-del-Sistema-Distribuido}}}}
+
+\vspace{0.35cm}
+
+\noindent{\large\textbf{2. Integrantes y roles del equipo}}\\[0.15cm]
+\noindent\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X l l}
+    \toprule
+    \textbf{Estudiante} & \textbf{Rol asignado} & \textbf{Usuario GitHub} \\
+    \midrule
+    Luis Jeremy Jaramillo Acosta & Arquitecto & \texttt{@JeremyJaramillo72} \\
+    Kenny Isaías España Vera & Líder de Desarrollo & \texttt{@kespanav} \\
+    Heiner Ariel Zambrano Ronquillo & Responsable de Calidad & \texttt{@Heiner-ZZZ} \\
+    Luis Alberto Paca Pilataza & Responsable de Documentación & \texttt{@Luis-paca} \\
+    \bottomrule
+\end{tabularx}
+
+\vspace{0.35cm}
+
+\noindent{\large\textbf{3. Resumen de entregables verificables en el repositorio}}\\[0.15cm]
+{\small
+\noindent\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{4.3cm} X}
+    \toprule
+    \textbf{Ruta en el repositorio} & \textbf{Contenido verificado} \\
+    \midrule
+    \texttt{docs/main.tex}, \texttt{docs/main.pdf} & Informe técnico en formato IEEE (portada, resumen ejecutivo, problema, objetivos \texttt{OE-01}--\texttt{OE-04}, trabajos relacionados, 10~RF, 6~RNF ISO/IEC~25010, justificación distribuida, C4 N1/N2, comunicación, CAP/PACELC, ADR, riesgos \texttt{FORM-AC-01}, plan, esqueleto gRPC, tabla de aportes e IA). \\
+    \texttt{docs/referencias.bib} & 13 referencias verificadas mediante DOI/URL oficial (estilo IEEE con \texttt{biblatex}/\texttt{biber}). \\
+    \texttt{docs/diagramas/}, \texttt{docs/figuras/} & Diagramas editables (\texttt{.drawio}) y figuras exportadas de C4 Nivel~1 (Contexto) y C4 Nivel~2 (Contenedores). \\
+    \texttt{docs/adr/} & Registros \texttt{ADR-001} (microservicios por dominio) y \texttt{ADR-002} (comunicación híbrida REST/gRPC/AMQP). \\
+    \texttt{proto/}, \texttt{src/}, \texttt{tests/} & Contrato \texttt{proto/bolsa\_uteq.proto}, servidor \texttt{servicio\_perfiles}, cliente \texttt{servicio\_postulaciones} con idempotencia \texttt{RNF-05} y suite automatizada \texttt{unittest} (\texttt{14/14 OK}, carga \texttt{RNF-01}). \\
+    \texttt{evidencias/}, \texttt{BITACORA.md} & Capturas de ejecución gRPC y pruebas, fotografías de sesiones de diseño en Excalidraw/Discord, captura del tablero GitHub Projects y bitácora cronológica del equipo. \\
+    \bottomrule
+\end{tabularx}
+}
+
+\vfill
+\begin{center}
+    \rule{0.7\linewidth}{0.3mm}\\[0.15cm]
+    {\small Hoja de entrega oficial para el SGA — Quevedo, Los Ríos, Ecuador — 29 de noviembre de 2026}
+\end{center}
+
+\end{document}

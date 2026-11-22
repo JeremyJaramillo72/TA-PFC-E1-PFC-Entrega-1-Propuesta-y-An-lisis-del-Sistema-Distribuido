@@ -226,6 +226,37 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
+## Sesión 8 — 21/11/2026
+
+- **Hora:** 19:20 – 20:05 (aprox.)
+- **Modalidad:** Trabajo técnico en repositorio local y seguimiento en GitHub Projects
+- **Presentes:** Luis Alberto Paca Pilataza
+
+### Temas tratados
+1. Sincronización con `origin/main` tras la integración del *Análisis de riesgos técnicos* derivado de `FORM-AC-01` por Jeremy (commit `85c601d`, issue `#21`) y la actualización de metadatos en `README.md` por Kenny (commit `f5eac9c`, issue `#22`), y apertura del **Issue `#25`** en el tablero `TA-PFC-E1 - Bolsa de Empleos UTEQ`.
+2. Redacción de la **Sección 1 (Resumen ejecutivo)** en `docs/main.tex`, verificada exactamente en `346` palabras dentro del rango obligatorio de 300 a 400 palabras.
+3. Incorporación en la **Sección 11 (Plan del proyecto)** de la captura completa del tablero público en GitHub Projects (`evidencias/tablero_github_projects.png`, mostrando las 20 tareas de `E1` y la planificación inicial de `E2`).
+4. Creación y verificación de `docs/hoja_sga.tex` (documento de exactamente 1 sola página para carga en el SGA con la URL pública completa del repositorio en una sola línea clicable).
+5. Verificación de compilación limpia de `docs/main.tex` (`pdflatex -> biber -> pdflatex -> pdflatex`, `0` errores, `13/13` citas IEEE resueltas), dejando la *Tabla de aportes individuales* reservada para el consolidado final de commits del equipo.
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D19 | Incorporar en `docs/main.tex` la Sección 1 (Resumen ejecutivo de 346 palabras verificadas) y la evidencia completa del tablero GitHub Projects en la Sección 11, dejando la *Tabla de aportes individuales* para el consolidado final antes del cierre. | Luis Paca | `docs/main.tex`, `evidencias/tablero_github_projects.png` — issue #25 |
+| D20 | Generar la hoja formal de una sola página (`docs/hoja_sga.tex`) verificada en 1 página exacta con la URL completa del repositorio en una sola línea para la entrega en el SGA. | Luis Paca | `docs/hoja_sga.tex`, `docs/hoja_sga.pdf` — issue #25 |
+
+### Problemas resueltos
+- Se verificó la cuenta activa de Git (`Luis-paca <161657721+Luis-paca@users.noreply.github.com>`) para completar 4 días distintos de actividad bajo una sola cuenta (`17`, `18`, `20` y `21/11`).
+- Se validó la compilación sin errores de `docs/main.tex` (`13/13` citas IEEE resueltas con `pdflatex -> biber -> pdflatex -> pdflatex`) y de `docs/hoja_sga.tex` (exactamente 1 página con la URL completa en una sola línea).
+
+### Pendientes para la próxima sesión
+- [ ] Consolidar la *Tabla de aportes individuales* en `docs/main.tex` con todos los commits e issues finales del equipo antes de la entrega definitiva.
+- [ ] Incorporar la evidencia de levantamiento real de información (entrevista o encuesta UTEQ) en `evidencias/` si resta por subir.
+- [ ] Grabar y enlazar en `README.md` el video de presentación (5–7 min).
+- [ ] Compilar y subir las versiones definitivas de `docs/main.pdf` y `docs/hoja_sga.pdf` tras confirmar el cierre total del equipo.
+
+---
+
 <!-- Plantilla para nuevas sesiones (copiar debajo)
 
 ## Sesión N — DD/MM/2026
