@@ -90,7 +90,7 @@ Para alcanzar el objetivo general a lo largo de las entregas E1--E4 del proyecto
 \textbf{Cód.} & \textbf{Objetivo específico} & \textbf{Indicador de verificación al final del periodo} \\
 \midrule
 OE-01 & Especificar los requisitos funcionales y no funcionales (ISO/IEC~25010), la arquitectura C4 (Niveles~1 y~2), los registros ADR y el análisis CAP/PACELC de la plataforma distribuida. & 100\,\% de los 10~RF y 6~RNF cuantificados aprobados en el informe, 2~diagramas C4 y 2~ADR versionados, y esqueleto \texttt{gRPC} validado con \texttt{14/14} pruebas automatizadas (\texttt{OK}). \\
-OE-02 & Desarrollar y contenerizar los microservicios orientados a dominio (\texttt{Perfiles}, \texttt{Postulaciones}, \texttt{Ofertas y Scraping} y \texttt{Notificaciones}) detrás de un \textit{API Gateway} con comunicación híbrida \texttt{REST/gRPC/AMQP}. & 100\,\% de los microservicios núcleo desplegados en contenedores Docker con $p95 \le 300\text{ ms}$ bajo 50~usuarios simultáneos (RNF-01) y escalado de 1 a 3~réplicas en $< 60\text{ s}$ (RNF-03). \\
+OE-02 & Desarrollar y contenerizar los cinco microservicios orientados a dominio (\texttt{Perfiles}, \texttt{Postulaciones}, \texttt{Ofertas y Validación}, \texttt{Ingesta Externa} y \texttt{Notificaciones}) detrás de un \textit{API Gateway} con comunicación híbrida \texttt{REST/gRPC/AMQP}. & 100\,\% de los microservicios núcleo desplegados en contenedores Docker con $p95 \le 300\text{ ms}$ bajo 50~usuarios simultáneos (RNF-01) y escalado de 1 a 3~réplicas en $< 60\text{ s}$ (RNF-03). \\
 OE-03 & Implementar persistencia descentralizada en PostgreSQL por dominio, control idempotente de concurrencia en postulaciones e ingesta asíncrona de ofertas externas mediante \textit{web scraping}. & 0~postulaciones duplicadas ante reintentos concurrentes (RNF-05), tiempo de recuperación $\text{RTO} \le 5\text{ min}$, disponibilidad $\ge 99{,}5$\,\% ante caídas de \textit{scraping} o SMTP (RNF-02) y 100\,\% de ofertas externas con fuente y enlace original (RF-10). \\
 OE-04 & Validar la seguridad perimetral, la trazabilidad auditable y la calidad integral del sistema distribuido conforme a la norma ISO/IEC~25010 en el despliegue integrado final. & 100\,\% del tráfico externo cifrado con TLS~1.3 y control RBAC (RNF-04), 100\,\% de eventos críticos y errores gRPC registrados en $< 1\text{ s}$ con marca UTC e ID de correlación (RNF-06) y $\ge 95$\,\% de pruebas integrales de carga, seguridad y resiliencia aprobadas. \\
 \bottomrule
@@ -173,7 +173,7 @@ RNF-06 & Mantenibilidad (Analizabilidad) & 100\,\% de las validaciones administr
 La plataforma debe atender de forma simultánea dos perfiles de carga incompatibles en un mismo ciclo operativo: rutas transaccionales interactivas de baja latencia (validación de elegibilidad, registro idempotente de postulaciones y aprobación administrativa) y procesos intensivos en entrada/salida sujetos a latencias variables o bloqueos de terceros (\textit{web scraping} de portales externos y despacho masivo de correos SMTP). Adoptar una \textbf{arquitectura monolítica} desplegada como una sola unidad con base de datos única resulta insuficiente frente a los requisitos no funcionales cuantificados en la Tabla~\ref{tab:rnf}:
 
 \begin{itemize}
-    \item \textbf{Aislamiento de fallos y disponibilidad (RNF-02):} en un monolito, una caída del servidor SMTP o la saturación de hilos provocada por un portal externo lento durante el \textit{scraping} degradan el mismo proceso que registra postulaciones. Separar \texttt{Servicio de Ofertas y Scraping} y \texttt{Servicio de Notificaciones} mediante mensajería asíncrona (\texttt{RabbitMQ/AMQP}) contiene fallos parciales y protege la disponibilidad operativa $\ge 99{,}5$\,\% de los servicios núcleo.
+    \item \textbf{Aislamiento de fallos y disponibilidad (RNF-02):} en un monolito, una caída del servidor SMTP o la saturación de hilos provocada por un portal externo lento durante el \textit{scraping} degradan el mismo proceso que registra postulaciones. Separar \texttt{Servicio de Ingesta Externa} y \texttt{Servicio de Notificaciones} mediante mensajería asíncrona (\texttt{RabbitMQ/AMQP}) contiene fallos parciales y protege la disponibilidad operativa $\ge 99{,}5$\,\% de los servicios núcleo.
     \item \textbf{Escalabilidad selectiva y desempeño temporal (RNF-01 y RNF-03):} durante convocatorias de graduados, las búsquedas de catálogo y la ingesta externa demandan más recursos que la administración de perfiles. Mientras un monolito obliga a replicar toda la aplicación con mayor consumo de memoria y tiempo de arranque, los microservicios contenerizados permiten escalar horizontalmente de 1 a 3 réplicas en $< 60\text{ s}$ únicamente los servicios bajo carga y sostener $p95 \le 300\text{ ms}$ en validaciones internas vía \texttt{gRPC}, en concordancia con evaluaciones empíricas de rendimiento entre arquitecturas monolíticas y de microservicios \cite{blinowski2022}.
     \item \textbf{Datos descentralizados y consistencia (RNF-05 y CAP/PACELC):} un esquema relacional monolítico acopla todos los módulos bajo una misma política transaccional. En cambio, el patrón \textit{database per service} con bases independientes (\texttt{BD Perfiles}, \texttt{BD Postulaciones} y \texttt{BD Ofertas}) permite aplicar consistencia fuerte e idempotencia estricta (\texttt{CP / PC-EC}) en postulaciones y elegibilidad, manteniendo alta disponibilidad y baja latencia (\texttt{AP / PA-EL}) en el catálogo de vacantes y alertas \cite{laigner2021}.
     \item \textbf{Seguridad perimetral, mantenibilidad y compromisos operativos (RNF-04 y RNF-06):} el \textit{API Gateway} concentra el cifrado \texttt{TLS 1.3}, el control RBAC y la trazabilidad de solicitudes, habilitando despliegues independientes por módulo entre E2 y E4. No obstante, esta decisión introduce costos conocidos —latencia de red interna, versionado estricto de contratos \texttt{.proto}, pruebas de integración distribuidas y mayor exigencia de observabilidad \cite{aksakalli2021,waseem2021}— que el equipo mitiga mediante \texttt{gRPC}, contratos en \texttt{proto/} y pruebas automatizadas desde E1.
@@ -253,15 +253,34 @@ Los contenedores, almacenes de datos y flujos de comunicación ilustrados en la 
     \item \textbf{Microservicios núcleo transaccionales (\texttt{CP / PC-EC}):}
     \begin{itemize}
         \item \textbf{Servicio de Perfiles} (\textit{Python / gRPC}): administra perfiles académicos, hojas de vida y estatus institucional; expone la operación \texttt{VerificarElegibilidad} (RF-02), persiste en \textbf{BD Perfiles} (\texttt{PostgreSQL / TLS}) y consulta al sistema externo \textbf{Padrón / Identidad UTEQ} vía \texttt{HTTPS / REST / TLS}.
-        \item \textbf{Servicio de Postulaciones} (\textit{Python / gRPC}): registra solicitudes de empleo evitando duplicados (RF-05, RNF-05), invoca de forma síncrona a \texttt{Servicio de Perfiles} mediante \texttt{gRPC / mTLS} para validar elegibilidad en tiempo real, almacena el historial en \textbf{BD Postulaciones} (\texttt{PostgreSQL / TLS}) y publica en el bróker (\texttt{AMQP / TLS}) el evento \texttt{Postulacion\-Registrada}.
+        \item \textbf{Servicio de Postulaciones} (\textit{Python / gRPC}): registra solicitudes de empleo evitando duplicados (RF-05, RNF-05), invoca de forma síncrona mediante \texttt{gRPC / mTLS} tanto a \texttt{Servicio de Perfiles} (elegibilidad en tiempo real, RF-02) como a \texttt{Servicio de Ofertas y Validación} (verificación de vacante aprobada y vigente, RF-05), almacena el historial en \textbf{BD Postulaciones} (\texttt{PostgreSQL / TLS}) y publica en el bróker (\texttt{AMQP / TLS}) el evento \texttt{Postulacion\-Registrada}.
     \end{itemize}
-    \item \textbf{Ofertas, mensajería y notificaciones (\texttt{AP / PA-EL}):}
+    \item \textbf{Ofertas, ingesta externa, mensajería y notificaciones (\texttt{AP / PA-EL}):}
     \begin{itemize}
-        \item \textbf{Servicio de Ofertas y Scraping} (\textit{Microservicio / Recolector}): consolida en un contenedor desplegable la gestión de vacantes de empresas, la validación administrativa UTEQ y el recolector periódico sobre \textbf{Portales Laborales Externos} (\texttt{HTTPS / Web Scraping}), persistiendo en \textbf{BD Ofertas} (\texttt{PostgreSQL / TLS}) y publicando el evento \texttt{NuevaOferta\-Validada} (\texttt{AMQP / TLS}). En E2/E3 la lógica de recolección podrá escalarse en réplicas independientes conforme a RNF-03.
-        \item \textbf{Broker de Mensajería} (\textit{RabbitMQ / AMQP}): desacopla los eventos \texttt{Postulacion\-Registrada} y \texttt{NuevaOferta\-Validada} de los servicios transaccionales, absorbiendo picos de tráfico e indisponibilidades temporales.
+        \item \textbf{Servicio de Ofertas y Validación} (\textit{Microservicio / gRPC}): gestiona las vacantes publicadas por empresas, la aprobación administrativa UTEQ y el catálogo filtrado (RF-03, RF-07, RF-09), persiste en \textbf{BD Ofertas} (\texttt{PostgreSQL / TLS}), consume vacantes externas desde el bróker (\texttt{AMQP / TLS}) y publica el evento \texttt{NuevaOferta\-Validada} (\texttt{AMQP / TLS}).
+        \item \textbf{Servicio de Ingesta Externa} (\textit{Recolector Web Scraping}): contenedor desplegable independiente que consulta periódicamente \textbf{Portales Laborales Externos} (\texttt{HTTPS / Web Scraping}), verifica vigencia y publica las vacantes recolectadas en el bróker (\texttt{AMQP / TLS}), permitiendo escalar de 1 a 3 réplicas según demanda sin afectar a los servicios núcleo (RF-10, RNF-02, RNF-03).
+        \item \textbf{Broker de Mensajería} (\textit{RabbitMQ / AMQP}): desacopla los eventos \texttt{Postulacion\-Registrada}, \texttt{NuevaOferta\-Validada} y las vacantes importadas de los servicios transaccionales, absorbiendo picos de tráfico e indisponibilidades temporales.
         \item \textbf{Servicio de Notificaciones} (\textit{Consumidor Asíncrono}): consume eventos del bróker (\texttt{AMQP / TLS}) y despacha alertas de empleo, avisos de estado y códigos 2FA mediante \textbf{Servicio de Correo (SMTP)} (\texttt{SMTP / TLS}) sin bloquear las peticiones del usuario (RF-10, RNF-02).
     \end{itemize}
 \end{itemize}
+
+\subsection{Evolución desde el bosquejo inicial de arquitectura}
+
+La arquitectura C4 consolidada en las Figuras~\ref{fig:c4-nivel1} y~\ref{fig:c4-nivel2} evolucionó a partir de dos sesiones colaborativas del equipo sobre pizarra compartida (Excalidraw). En el primer bosquejo del 18 de noviembre de 2026 (\texttt{19:20}, Figura~\ref{fig:bosquejo-evolucion}, izquierda) se definieron los tres actores, el \textit{API Gateway} y tres servicios preliminares, planteando explícitamente las decisiones abiertas sobre base de datos única frente a base de datos por servicio, adopción de \texttt{gRPC} y cifrado \texttt{TLS}. En la segunda sesión del 19 de noviembre de 2026 (\texttt{23:38}, Figura~\ref{fig:bosquejo-evolucion}, derecha) se delimitó la frontera del sistema distribuido, se incorporaron la aplicación web SPA, las bases \texttt{PostgreSQL} aisladas por dominio, el bróker \texttt{RabbitMQ/AMQP}, el consumidor de notificaciones y los tres sistemas externos; finalmente, al alinear el diagrama C4 Nivel~2 con \texttt{ADR-001} y \texttt{RNF-03}, se desacopló \texttt{Servicio de Ingesta Externa} en su propio contenedor y se explicitó la verificación síncrona entre \texttt{Postulaciones} y \texttt{Ofertas y Validación}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../evidencias/sesion_diseno_01.jpeg}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../evidencias/sesion_diseno_02.jpeg}
+    \end{minipage}
+    \caption{Evolución colaborativa de la arquitectura en sesiones del equipo: primer bosquejo inicial con decisiones abiertas (\texttt{18/11/2026 19:20}, izquierda) y refinamiento con límite del sistema, bases aisladas y bróker AMQP (\texttt{19/11/2026 23:38}, derecha).}
+    \label{fig:bosquejo-evolucion}
+\end{figure}
 
 \section{Modelo de comunicación entre servicios}
 
@@ -309,21 +328,25 @@ La extensión \textbf{PACELC} complementa dicho análisis al modelar también la
     \item \textbf{Catálogo de Ofertas / \textit{Scraping} y Notificaciones (AP / PA-EL):} atienden consultas frecuentes de búsqueda y filtrado de vacantes (RF-03), sincronización periódica de portales externos y envío diferido de alertas por correo (RF-10). En estos módulos resulta aceptable la consistencia eventual de segundos o minutos mientras se asegure alta disponibilidad frente a fallos parciales ($PA$) y tiempos de respuesta reducidos en operación normal ($EL$), respaldando los requisitos RNF-01 y RNF-02.
 \end{itemize}
 
-La Tabla~\ref{tab:cap-pacelc} resume la clasificación CAP y PACELC por microservicio y dato crítico.
+La Tabla~\ref{tab:cap-pacelc} resume la clasificación CAP y PACELC por microservicio y dato crítico, detallando tanto la estrategia técnica como la consecuencia directa que experimenta el usuario.
 
 \begin{table}[htbp]
 \centering
-\caption{Análisis CAP y PACELC aplicado a los microservicios y datos críticos del sistema.}
+\caption{Análisis CAP y PACELC por dato crítico y consecuencia visible para el usuario.}
 \label{tab:cap-pacelc}
-\small
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.8cm} c c X}
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{2.25cm} >{\raggedright\arraybackslash}p{2.35cm} c c >{\raggedright\arraybackslash}p{3.95cm} >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Microservicio} & \textbf{Dato crítico} & \textbf{CAP} & \textbf{PACELC} & \textbf{Justificación técnica y estrategia} \\
+\textbf{Microservicio} & \textbf{Dato crítico} & \textbf{CAP} & \textbf{PACELC} & \textbf{Justificación técnica} & \textbf{Consecuencia para el usuario} \\
 \midrule
-Perfiles & Padrón de graduados, estatus de habilitación y perfil académico & CP & PC-EC & Exige consistencia fuerte para validar elegibilidad en tiempo real (RF-02); ante partición se rechaza la consulta antes que autorizar graduados no habilitados. \\
-Postulaciones & Registro de postulaciones, control de duplicados e historial de estados & CP & PC-EC & Garantiza cero postulaciones duplicadas mediante claves de idempotencia (RF-05, RNF-05) e integridad en las actualizaciones de estado (RF-06, RF-08). \\
-Ofertas y Validación / Ingesta Externa & Catálogo de vacantes vigentes y ofertas recolectadas vía \textit{scraping} & AP & PA-EL & Prioriza disponibilidad del catálogo (RF-03) y baja latencia ($p95 \le 300\text{ ms}$, RNF-01), aceptando consistencia eventual al propagar ofertas externas o aprobadas (RF-10). \\
-Notificaciones & Cola de alertas personalizadas, avisos de estado y correos 2FA & AP & PA-EL & Procesamiento asíncrono sobre AMQP con consistencia eventual y reintentos; una indisponibilidad del servidor SMTP no interrumpe los servicios núcleo (RNF-02). \\
+Perfiles & Padrón de graduados, estatus de habilitación y perfil académico & CP & PC-EC & Exige consistencia fuerte al validar elegibilidad en tiempo real (RF-02); ante partición se rechaza la consulta antes que autorizar graduados no habilitados. & Si ocurre una partición hacia \texttt{BD Perfiles} o el Padrón UTEQ, el graduado recibe un aviso temporal y no puede postular ni editar su perfil hasta restablecer la conexión. \\
+\addlinespace
+Postulaciones & Registro de postulaciones, control de duplicados e historial de estados & CP & PC-EC & Garantiza cero postulaciones duplicadas mediante claves de idempotencia (RF-05, RNF-05) e integridad en los cambios de estado (RF-06, RF-08). & Ante reintentos de red o partición, el graduado recibe una única confirmación o un error controlado (\texttt{UNAVAILABLE} o \texttt{DEADLINE\_EXCEEDED}), evitando postulaciones duplicadas o estados inconsistentes. \\
+\addlinespace
+Ofertas y Validación / Ingesta Externa & Catálogo de vacantes vigentes y ofertas recolectadas vía \textit{scraping} & AP & PA-EL & Prioriza disponibilidad del catálogo (RF-03) y baja latencia ($p95 \le 300\text{ ms}$, RNF-01), aceptando consistencia eventual al propagar ofertas externas o aprobadas (RF-10). & El graduado sigue buscando y filtrando vacantes sin interrupciones, aunque una vacante recién aprobada o importada externamente pueda tardar segundos o minutos en aparecer. \\
+\addlinespace
+Notificaciones & Cola de alertas personalizadas, avisos de estado y correos 2FA & AP & PA-EL & Procesamiento asíncrono sobre \texttt{AMQP} con consistencia eventual y reintentos; una caída del servidor SMTP no interrumpe los servicios núcleo (RNF-02). & Si falla el correo externo, el graduado continúa navegando y postulando normalmente; las alertas llegan de forma diferida al recuperarse SMTP y los administradores operan con respaldo \textit{out-of-band}. \\
 \bottomrule
 \end{tabularx}
 \end{table}
