@@ -13,6 +13,8 @@ Plataforma distribuida basada en microservicios para gestionar la inserción lab
 | Heiner Ariel Zambrano Ronquillo | Responsable de Calidad |
 | Luis Alberto Paca Pilataza | Responsable de Documentación |
 
+> **Nota de autoría en GitHub:** la cuenta principal de **Luis Alberto Paca Pilataza** es `@Luis-paca`. El commit `395b1ad` (19/11/2026, Issue `#16`) también corresponde a su autoría y se registró puntualmente bajo su cuenta personal secundaria `@Luispaca2002` debido a una configuración previa en el `.gitconfig` local, corregida posteriormente a `@Luis-paca`.
+
 ## Video de presentación
 Video de presentación del proyecto (5–7 min) correspondiente a la entrega `TA-PFC-E1` de **Aplicaciones Distribuidas (`ISR-701`)**.
 

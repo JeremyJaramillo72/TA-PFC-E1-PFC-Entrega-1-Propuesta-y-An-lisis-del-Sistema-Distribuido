@@ -247,6 +247,7 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ### Problemas resueltos
 - Se verificó la cuenta activa de Git (`Luis-paca <161657721+Luis-paca@users.noreply.github.com>`) para completar 4 días distintos de actividad bajo una sola cuenta (`17`, `18`, `20` y `21/11`).
+- Se documentó en `README.md` y en esta bitácora que el commit `395b1ad` (19/11/2026, Issue `#16`) de Luis Alberto Paca Pilataza se registró desde su cuenta secundaria `@Luispaca2002` por una credencial local previa en `.gitconfig`, ya desvinculada y unificada a `@Luis-paca`.
 - Se validó la compilación sin errores de `docs/main.tex` (`13/13` citas IEEE resueltas con `pdflatex -> biber -> pdflatex -> pdflatex`) y de `docs/hoja_sga.tex` (exactamente 1 página con la URL completa en una sola línea).
 
 ### Pendientes para la próxima sesión
