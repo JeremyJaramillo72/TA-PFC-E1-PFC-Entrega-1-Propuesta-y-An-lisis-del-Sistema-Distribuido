@@ -21,7 +21,7 @@ for ruta in (GENERATED_DIR, SERVICIO_PERFILES_DIR, SERVICIO_POSTULACIONES_DIR):
 
 import bolsa_uteq_pb2
 import bolsa_uteq_pb2_grpc
-from cliente_postulaciones import verificar_elegibilidad
+from cliente_postulaciones import RegistroPostulaciones, postular, verificar_elegibilidad
 from servidor_perfiles import GRADUADOS_UTEQ, PerfilServicer
 
 
@@ -319,6 +319,45 @@ class TestIntegracionPerfilesGrpc(unittest.TestCase):
                 )
         finally:
             servidor_lento.stop(grace=0.2).wait()
+
+    def test_idempotencia_postulacion_secuencial_rnf05(self):
+        registro = RegistroPostulaciones()
+        with contextlib.redirect_stdout(io.StringIO()):
+            primero = postular(self._stub, registro, "GRAD-TEST-002", "OF-2026-001")
+            segundo = postular(self._stub, registro, "GRAD-TEST-002", "OF-2026-001")
+            invalido = postular(self._stub, registro, "ID-INVALIDO", "OF-2026-001")
+            no_reg = postular(self._stub, registro, "GRAD-TEST-999", "OF-2026-001")
+
+        self.assertEqual(primero, "ACEPTADA")
+        self.assertEqual(segundo, "DUPLICADA")
+        self.assertEqual(invalido, "RECHAZADA")
+        self.assertEqual(no_reg, "RECHAZADA")
+        self.assertEqual(registro.listar(), [("GRAD-TEST-002", "OF-2026-001")])
+
+    def test_idempotencia_postulacion_concurrente_rnf05(self):
+        total_hilos = 20
+        registro = RegistroPostulaciones()
+        barrera = threading.Barrier(total_hilos)
+
+        def intentar(_):
+            barrera.wait(timeout=5)
+            return postular(self._stub, registro, "GRAD-TEST-001", "OF-2026-CONC")
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            with futures.ThreadPoolExecutor(max_workers=total_hilos) as executor:
+                resultados = list(executor.map(intentar, range(total_hilos)))
+
+        aceptadas = resultados.count("ACEPTADA")
+        duplicadas = resultados.count("DUPLICADA")
+        print(
+            f"\n[Idempotencia RNF-05] Hilos={total_hilos} | "
+            f"Aceptadas={aceptadas} | Duplicadas={duplicadas} | "
+            f"Registros={len(registro.listar())} (0 duplicados)",
+            flush=True,
+        )
+        self.assertEqual(aceptadas, 1)
+        self.assertEqual(duplicadas, total_hilos - 1)
+        self.assertEqual(len(registro.listar()), 1)
 
 
 if __name__ == "__main__":
