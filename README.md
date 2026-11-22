@@ -21,6 +21,13 @@ Video de presentación del proyecto (5–7 min) correspondiente a la entrega `TA
 - **Enlace:** pendiente de publicación.
 - **Fecha planificada de grabación:** por definir.
 
+## Levantamiento real de información (Evidencia 1)
+Las transcripciones fieles con marcas de tiempo, los enlaces públicos verificados a las grabaciones originales en Google Drive y la matriz de trazabilidad hacia los 10 RF y 6 RNF se encuentran en [`evidencias/levantamiento/`](evidencias/levantamiento/README.md) *(los archivos de audio/video se mantienen alojados externamente en Drive por privacidad y control de acceso)*:
+
+- **Índice y matriz de trazabilidad:** [`evidencias/levantamiento/README.md`](evidencias/levantamiento/README.md)
+- **Carpeta pública de entrevistas (grabaciones originales en Drive):** https://drive.google.com/drive/folders/1Tuj7LALrMUyvxrVDbiNIE_z8ARsqIixv?usp=sharing
+- **Carpeta pública de verificación de requisitos con PO (Drive):** https://drive.google.com/drive/folders/1f9duhgVlw0f6uexOz3nxi4n83_o8gerG?usp=sharing
+
 ## Estructura del repositorio
 ```text
 ├── proto/                  # Contratos de interfaz Protocol Buffers (.proto)
@@ -35,6 +42,7 @@ Video de presentación del proyecto (5–7 min) correspondiente a la entrega `TA
 ├── scripts/                # Utilidades (regeneración de stubs gRPC)
 ├── tests/                  # Pruebas de contrato e integración gRPC
 ├── evidencias/             # Actas/encuestas, fotografías de diseño y capturas
+│   └── levantamiento/      # Transcripciones, enlaces a grabaciones y trazabilidad (Evidencia 1)
 ├── requirements.txt        # Dependencias de Python
 ├── BITACORA.md             # Registro cronológico de sesiones del equipo
 └── README.md               # Guía general y de compilación

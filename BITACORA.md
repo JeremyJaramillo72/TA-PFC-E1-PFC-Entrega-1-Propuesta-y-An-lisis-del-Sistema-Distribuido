@@ -258,6 +258,34 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
+## Sesión 9 — 21/11/2026
+
+- **Hora:** 20:30 – 22:35 (aprox., ~2 horas de trabajo)
+- **Modalidad:** Trabajo técnico en repositorio local, revisión de grabaciones en Google Drive y seguimiento en GitHub Projects
+- **Presentes:** Heiner Ariel Zambrano Ronquillo
+
+### Temas tratados
+1. Sincronización del repositorio con `origin/main` (`21268da`) y apertura del **Issue `#26`** para consolidar la **Evidencia de autoría 1 (Levantamiento real de información)** y su trazabilidad hacia `docs/main.tex`.
+2. Revisión y auditoría directa de los audios, videos y documentos originales de las entrevistas del dominio Bolsa de Empleos UTEQ alojados en Google Drive: Ing. Washington Casanova (`26/06/2025`, `13:42`), Ing. Roberto Suárez (`28/06/2025`, con consentimiento verbal expreso literal), Geovanny Ochoa (`28/06/2025`) y la sesión de validación de requisitos con el Product Owner (`30/08/2025`, `Requisitos_01.opus` y `Requisitos_02.opus`).
+3. Elaboración de las cuatro transcripciones limpias y estructuradas con marcas de tiempo verificadas `[mm:ss]` en `evidencias/levantamiento/`, junto con el índice y la matriz de trazabilidad hacia los 10 RF y 6 RNF en `evidencias/levantamiento/README.md`.
+4. Verificación en modo incógnito de los 12 enlaces públicos de Google Drive (`HTTP 200`, sin requerir inicio de sesión) y enlace de la evidencia desde `README.md`.
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D21 | Alojar las grabaciones binarias de voz/video externamente en Google Drive y versionar en el repositorio público únicamente las transcripciones limpias en Markdown sin datos sensibles y los enlaces públicos verificados (cumpliendo «cuyo enlace va en el repositorio» sin exponer archivos binarios en el historial Git). | Heiner | `evidencias/levantamiento/`, `README.md` — issue #26 |
+| D22 | Conservar íntegras las fechas originales reales de las grabaciones (junio y agosto de 2025) y estructurar la matriz de trazabilidad explícita de los 10 RF (`RF-01`–`RF-10`) y 6 RNF (`RNF-01`–`RNF-06`) hacia citas y marcas de tiempo verificables de las entrevistas. | Heiner | `evidencias/levantamiento/README.md` — issue #26 |
+
+### Problemas resueltos
+- Se eliminaron del área local los archivos binarios `.m4a` y `.opus` antes de subir al repositorio público tras verificar que no existía autorización firmada para incrustar archivos de voz en GitHub, reemplazándolos por sus enlaces directos en Google Drive verificados con `HTTP 200` en modo incógnito.
+- Se depuraron errores de OCR y marcas de agua automáticas de los PDFs originales al redactar las transcripciones fieles auditadas directamente contra los audios, verificando ausencia total de números de cédula o teléfonos privados.
+
+### Pendientes para la próxima sesión
+- [ ] Completar la segunda parte del Issue `#26` en `docs/main.tex`: actualizar la Sección 2 (*Contexto y problema*) con los hallazgos y consecuencias medibles reales de las entrevistas, agregar la tabla de trazabilidad RF/RNF en la Sección 5 (*Especificación de requisitos*) y validar compilación limpia (`pdflatex -> biber -> pdflatex -> pdflatex`).
+- [ ] Consolidar con el equipo la *Tabla de aportes individuales*, grabar y enlazar el video de presentación (5–7 min) en `README.md` y generar los PDFs definitivos (`docs/main.pdf` y `docs/hoja_sga.pdf`).
+
+---
+
 <!-- Plantilla para nuevas sesiones (copiar debajo)
 
 ## Sesión N — DD/MM/2026
