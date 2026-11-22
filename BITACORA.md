@@ -286,6 +286,32 @@ Asignatura: Aplicaciones Distribuidas (ISR-701) — SPA 2026-2027
 
 ---
 
+## Sesión 10 — 21/11/2026
+
+- **Hora:** 23:00 – 23:20
+- **Modalidad:** Trabajo técnico en repositorio local (cierre de Issue `#26`)
+- **Presentes:** Heiner Ariel Zambrano Ronquillo
+
+### Temas tratados
+1. Integración en la **Sección 2 (`Contexto y problema`)** de `docs/main.tex` de los hallazgos reales y consecuencias medibles extraídas de las entrevistas `E1`–`E4` (costos/tiempos manuales de \$600/mes frente a ~2 h y \$0,10 con *web scraping* + ETL para 1.000 ofertas, expiración de vacantes a 2–3 meses, ~20 carpetas sin filtro por vacante, rechazo de CVs multipágina y baja de correos estudiantiles UTEQ a los ~5 años).
+2. Incorporación en la **Sección 5 (`Especificación de requisitos`)** de `docs/main.tex` de la subsección de trazabilidad (`Tabla~\ref{tab:trazabilidad-requisitos}`) vinculando los 10 RF (`RF-01`–`RF-10`) y los 6 RNF (`RNF-01`–`RNF-06`) con fuentes y marcas de tiempo reales, incluyendo nota metodológica sobre la evolución y refinamiento desde el levantamiento inicial (junio–agosto 2025) hasta la arquitectura distribuida de `ISR-701`.
+3. Validación completa de compilación de `docs/main.tex` mediante `pdflatex -> biber -> pdflatex -> pdflatex` en carpeta temporal para confirmar 0 errores y 0 citas indefinidas antes de cerrar el **Issue `#26`**.
+
+### Decisiones tomadas
+| # | Decisión | Responsable | Evidencia |
+| :--- | :--- | :--- | :--- |
+| D23 | Explicitar tanto en `evidencias/levantamiento/README.md` como en la Sección 5 de `docs/main.tex` la nota metodológica de evolución y acotación de requisitos desde las entrevistas iniciales hacia la especificación distribuida ISO/IEC 25010, asegurando trazabilidad transparente para E1 y la verificación oral. | Heiner | `docs/main.tex`, `evidencias/levantamiento/README.md` — issue #26 |
+
+### Problemas resueltos
+- Se ajustó la matriz de trazabilidad en `docs/main.tex` con formato compacto (`\footnotesize` y anchos explícitos en `tabularx`) para evitar desbordamientos horizontales o verticales y asegurar compilación limpia con `pdflatex` + `biber`.
+- Se reemplazaron las 4 apariciones restantes de «egresado/egresados» por «graduado/graduados» en `docs/main.tex`, cumpliendo directamente la indicación terminológica del Product Owner en `Requisitos_01.opus` (`[04:10–04:19]`).
+
+### Pendientes para la próxima sesión
+- [ ] Consolidar la *Tabla de aportes individuales* en `docs/main.tex` (Issue `#25`).
+- [ ] Grabar y enlazar en `README.md` el video de presentación (5–7 min) y compilar las versiones definitivas de `docs/main.pdf` y `docs/hoja_sga.pdf`.
+
+---
+
 <!-- Plantilla para nuevas sesiones (copiar debajo)
 
 ## Sesión N — DD/MM/2026
