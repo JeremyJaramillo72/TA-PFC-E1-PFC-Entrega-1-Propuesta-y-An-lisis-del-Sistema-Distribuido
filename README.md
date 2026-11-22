@@ -18,8 +18,8 @@ Plataforma distribuida basada en microservicios para gestionar la inserción lab
 ## Video de presentación
 Video de presentación del proyecto (5–7 min) correspondiente a la entrega `TA-PFC-E1` de **Aplicaciones Distribuidas (`ISR-701`)**.
 
-- **Enlace:** pendiente de publicación.
-- **Fecha planificada de grabación:** por definir.
+- **Enlace (YouTube):** https://youtu.be/5rmrwwglcD4
+- **Fecha de grabación:** 21 de noviembre de 2026.
 
 ## Levantamiento real de información (Evidencia 1)
 Las transcripciones fieles con marcas de tiempo, los enlaces públicos verificados a las grabaciones originales en Google Drive y la matriz de trazabilidad hacia los 10 RF y 6 RNF se encuentran en [`evidencias/levantamiento/`](evidencias/levantamiento/README.md) *(los archivos de audio/video se mantienen alojados externamente en Drive por privacidad y control de acceso)*:
